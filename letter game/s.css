@@ -1,0 +1,412 @@
+/* *{
+    margin: 0 auto;
+    padding: 0;
+
+}
+.bkg{
+    height: 650px;
+    width: 1000px;
+    background: url(10a25bf0-5120-11ee-93a3-493171bdd6dc.jpg);
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+}
+.button {
+    height: 15%;
+    width: 20%;
+    border-radius: 12px;
+    padding: 1.4%;
+    margin-top: 30%;
+    margin-bottom: 5%;
+    cursor: pointer;
+    color: white;
+    background: #00c;
+    align-items: center;
+    display: flex;
+
+  }
+  h1{
+    align-items: center;
+  }
+  .p{
+    height: 20%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    color: white;
+  
+  }
+  .part{
+    display: flex;
+    height: 80%;
+    width: 20%;
+    background: #00c;
+    margin: 2%;
+    border-radius: 0.2em;
+  }
+  .part>a{
+    color: white;
+    align-items: center;
+    align-self: center;
+    font-size: 300%;
+    text-decoration: none;
+  }
+  #p{
+    display: flex;
+    align-items: center;
+    background-color: blueviolet;
+    border-radius: 50%;
+  }
+  #p>a{
+    font-size: 200%;
+    cursor:pointer;
+    text-decoration:none;
+  }
+  .a{
+    margin: 5%;
+    height: 80%;
+    width: 5%;
+    align-items: center;
+    display: flex;
+
+    background-color: blueviolet;
+    border-radius: 50%;
+    font-size: 200%;
+    cursor:pointer;
+    text-decoration:none;
+  } */
+  /* General styles */
+/* * {
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* Styles for all screen sizes */
+/* .bkg {
+  height: 610px;
+  width: 100%;
+  background: url(10a25bf0-5120-11ee-93a3-493171bdd6dc.jpg);
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.button {
+  height: 50px;
+  width: 150px;
+  border-radius: 12px;
+  padding: 1.4%;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  color: white;
+  background: #00c;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+h1 {
+  align-items: center;
+  font-size: 2rem;
+}
+
+.p {
+  height: 20%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  color: white;
+  justify-content: space-between;
+}
+
+.part {
+  display: flex;
+  height: 80%;
+  width: 20%;
+  background: #00c;
+  margin: 2%;
+  border-radius: 0.2em;
+  align-items: center;
+  justify-content: center;
+}
+
+.part > a {
+  color: white;
+  align-items: center;
+  align-self: center;
+  font-size: 300%;
+  text-decoration: none;
+}
+
+#p {
+  display: flex;
+  align-items: center;
+  background-color: blueviolet;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+#p > a {
+  font-size: 200%;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.a {
+  margin: 5%;
+  height: 80%;
+  width: 5%;
+  align-items: center;
+  display: flex;
+  background-color: blueviolet;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.bkg {
+  height: 610px;
+  width: 100%;
+  background: url(10a25bf0-5120-11ee-93a3-493171bdd6dc.jpg);
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.button {
+  height: 50px;
+  width: 150px;
+  border-radius: 12px;
+  padding: 1.4%;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  color: white;
+  background: #00c;
+  display: flex;
+  justify-content: center;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.p {
+  height: 20%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  color: white;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.part {
+  display: flex;
+  height: 80%;
+  width: 20%;
+  background: #00c;
+  margin: 2%;
+  border-radius: 0.2em;
+  align-items: center;
+  justify-content: center;
+}
+
+.part > a {
+  color: white;
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+#p {
+  display: flex;
+  align-items: center;
+  background-color: blueviolet;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+#p > a {
+  font-size: 1.5rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.a {
+  margin: 5%;
+  height: 80%;
+  width: 5%;
+  align-items: center;
+  display: flex;
+  background-color: blueviolet;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.bkg {
+  height: 610px;
+  width: 100%;
+  background: url(10a25bf0-5120-11ee-93a3-493171bdd6dc.jpg);
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.button {
+  height: 50px;
+  width: 150px;
+  border-radius: 12px;
+  padding: 1.4%;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  color: white;
+  background: #00c;
+  display: flex;
+  justify-content: center;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.p {
+  height: 20%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  color: white;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.part {
+  display: flex;
+  height: 80%;
+  width: 20%;
+  background: #00c;
+  margin: 2%;
+  border-radius: 0.2em;
+  align-items: center;
+  justify-content: center;
+}
+
+.part > a {
+  color: white;
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+#p {
+  display: flex;
+  align-items: center;
+  background-color: blueviolet;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+#p > a {
+  font-size: 1.5rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.a {
+  margin: 5%;
+  height: 80%;
+  width: 5%;
+  align-items: center;
+  display: flex;
+  background-color: blueviolet;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* Styles for computers (min-width: 1200px) */
+@media (min-width: 1200px) {
+  .bkg {
+    flex-direction: column;
+  }
+}
+
+/* Styles for tablets (min-width: 768px) and (max-width: 1199px) */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .bkg {
+    flex-direction: column;
+  }
+}
+
+/* Styles for mobile phones (max-width: 767px) */
+@media (max-width: 767px) {
+  .bkg {
+    height: auto;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+
+  .button {
+    height: 40px;
+    width: 120px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-size: 1.2rem;
+  }
+
+  .p {
+    height: auto;
+    flex-direction: column;
+    margin-top: 10px;
+  }
+
+  .part {
+    width: 100%;
+    margin: 2% 0;
+  }
+}
+

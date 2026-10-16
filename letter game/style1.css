@@ -1,0 +1,108 @@
+/* *{
+    margin: 0 auto;
+    padding: 0;
+}
+.bkg{
+    height: 650px;
+    width: 1000px;
+    background: url(10a25bf0-5120-11ee-93a3-493171bdd6dc.jpg);
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    gap: 2%;
+}
+h1{
+    margin-top: 5%;
+}
+.l{
+    height: 50%;
+    width: 100%;
+    display: flex;
+}
+button{
+    height: 40%;
+    width: 18%;
+    margin-top: 20%;
+}
+button>img{
+    height: 100%;
+    width: 100%;
+    border-radius: 3%;
+}
+
+.d{
+    margin-top: 20%;
+}  */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.bkg {
+  height: 250vh;
+  width: 1000vw;
+  background: url(10a25bf0-5120-11ee-93a3-493171bdd6dc.jpg);
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  gap: 2%;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+h1 {
+  margin-top: 5%;
+  font-size: 2rem;
+}
+
+.l {
+  height: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+button {
+  height: 60px; /* افزایش اندازه دکمه */
+  width: 150px; /* افزایش اندازه دکمه */
+  margin-top: 20px; /* افزایش فاصله بالایی دکمه */
+}
+
+button>img {
+  height: 100%;
+  width: 100%;
+  border-radius: 3%;
+}
+
+.s {
+    background-color: aqua;
+  margin-left: 0;
+  margin-top: 10%;
+  padding: 14%;
+}
+
+.d {
+  margin-top: 10%;
+}
+
+/* Media Queries */
+@media (max-width: 767px) {
+  .bkg {
+      height: auto;
+      padding: 20px;
+  }
+
+  button {
+      height: 50px;
+      width: 120px;
+      margin-top: 10px;
+  }
+}
+
+
+
+  

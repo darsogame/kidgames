@@ -1,0 +1,173 @@
+{
+    "animals": [
+      {
+        "id": "dog",
+        "name": "سگ",
+        "emoji": "🐶",
+        "type": "domestic",
+        "image": "assets/images/animals/dog.png",
+        "sound": "assets/sounds/animals/dog.mp3"
+      },
+      {
+        "id": "cat",
+        "name": "گربه",
+        "emoji": "🐱",
+        "type": "domestic",
+        "image": "assets/images/animals/cat.png",
+        "sound": "assets/sounds/animals/cat.mp3"
+      },
+      {
+        "id": "cow",
+        "name": "گاو",
+        "emoji": "🐮",
+        "type": "domestic",
+        "image": "assets/images/animals/cow.png",
+        "sound": "assets/sounds/animals/cow.mp3"
+      },
+      {
+        "id": "sheep",
+        "name": "گوسفند",
+        "emoji": "🐑",
+        "type": "domestic",
+        "image": "assets/images/animals/sheep.png",
+        "sound": "assets/sounds/animals/sheep.mp3"
+      },
+      {
+        "id": "chicken",
+        "name": "مرغ",
+        "emoji": "🐔",
+        "type": "domestic",
+        "image": "assets/images/animals/chicken.png",
+        "sound": "assets/sounds/animals/chicken.mp3"
+      },
+      {
+        "id": "rooster",
+        "name": "خروس",
+        "emoji": "🐓",
+        "type": "domestic",
+        "image": "assets/images/animals/rooster.png",
+        "sound": "assets/sounds/animals/rooster.mp3"
+      },
+      {
+        "id": "duck",
+        "name": "اردک",
+        "emoji": "🦆",
+        "type": "domestic",
+        "image": "assets/images/animals/duck.png",
+        "sound": "assets/sounds/animals/duck.mp3"
+      },
+      {
+        "id": "horse",
+        "name": "اسب",
+        "emoji": "🐴",
+        "type": "domestic",
+        "image": "assets/images/animals/horse.png",
+        "sound": "assets/sounds/animals/horse.mp3"
+      },
+      {
+        "id": "rabbit",
+        "name": "خرگوش",
+        "emoji": "🐰",
+        "type": "domestic",
+        "image": "assets/images/animals/rabbit.png",
+        "sound": "assets/sounds/animals/rabbit.mp3"
+      },
+      {
+        "id": "lion",
+        "name": "شیر",
+        "emoji": "🦁",
+        "type": "wild",
+        "image": "assets/images/animals/lion.png",
+        "sound": "assets/sounds/animals/lion.mp3"
+      },
+      {
+        "id": "elephant",
+        "name": "فیل",
+        "emoji": "🐘",
+        "type": "wild",
+        "image": "assets/images/animals/elephant.png",
+        "sound": "assets/sounds/animals/elephant.mp3"
+      },
+      {
+        "id": "tiger",
+        "name": "ببر",
+        "emoji": "🐯",
+        "type": "wild",
+        "image": "assets/images/animals/tiger.png",
+        "sound": "assets/sounds/animals/tiger.mp3"
+      },
+      {
+        "id": "wolf",
+        "name": "گرگ",
+        "emoji": "🐺",
+        "type": "wild",
+        "image": "assets/images/animals/wolf.png",
+        "sound": "assets/sounds/animals/wolf.mp3"
+      },
+      {
+        "id": "fox",
+        "name": "روباه",
+        "emoji": "🦊",
+        "type": "wild",
+        "image": "assets/images/animals/fox.png",
+        "sound": "assets/sounds/animals/fox.mp3"
+      },
+      {
+        "id": "bear",
+        "name": "خرس",
+        "emoji": "🐻",
+        "type": "wild",
+        "image": "assets/images/animals/bear.png",
+        "sound": "assets/sounds/animals/bear.mp3"
+      },
+      {
+        "id": "monkey",
+        "name": "میمون",
+        "emoji": "🐵",
+        "type": "wild",
+        "image": "assets/images/animals/monkey.png",
+        "sound": "assets/sounds/animals/monkey.mp3"
+      },
+      {
+        "id": "deer",
+        "name": "آهو",
+        "emoji": "🦌",
+        "type": "wild",
+        "image": "assets/images/animals/deer.png",
+        "sound": "assets/sounds/animals/deer.mp3"
+      },
+      {
+        "id": "snake",
+        "name": "مار",
+        "emoji": "🐍",
+        "type": "wild",
+        "image": "assets/images/animals/snake.png",
+        "sound": "assets/sounds/animals/snake.mp3"
+      },
+      {
+        "id": "bee",
+        "name": "زنبور",
+        "emoji": "🐝",
+        "type": "wild",
+        "image": "assets/images/animals/bee.png",
+        "sound": "assets/sounds/animals/bee.mp3"
+      },
+      {
+        "id": "frog",
+        "name": "قورباغه",
+        "emoji": "🐸",
+        "type": "wild",
+        "image": "assets/images/animals/frog.png",
+        "sound": "assets/sounds/animals/frog.mp3"
+      }
+    ],
+    "effects": {
+      "success": "assets/sounds/effects/success.mp3",
+      "error": "assets/sounds/effects/error.mp3",
+      "click": "assets/sounds/effects/click.mp3"
+    },
+    "backgrounds": {
+      "farm": "assets/images/backgrounds/farm.jpg",
+      "jungle": "assets/images/backgrounds/jungle.jpg"
+    }
+  }

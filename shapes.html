@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🔷 شناخت اشکال</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  /* استایل مخصوص اشکال */
+  .shape-display {
+    font-size: clamp(3rem, 10vw, 6rem);
+    line-height: 1;
+  }
+
+  .option-card .shape-svg {
+    width: 70%;
+    height: 70%;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🔷 شناخت اشکال</h1>
+    <p>گوش کن و شکل درست را انتخاب کن</p>
+  </div>
+
+  <!-- سوال -->
+  <div class="question-area">
+    <button class="speak-btn-main" id="speakBtn" onclick="speakQuestion()">🔊</button>
+    <div style="font-size: clamp(1.5rem, 4vw, 2.5rem); font-weight: 900; color: #7c3aed;" id="questionText">
+      دایره
+    </div>
+  </div>
+
+  <!-- ناحیه بازی -->
+  <div class="game-area" id="gameArea"></div>
+
+  <!-- شمارنده -->
+  <div class="counters">
+    <div class="counter-box">
+      <div class="counter-label">درست</div>
+      <div class="counter-value correct-count" id="correctCount">۰</div>
+    </div>
+    <div class="counter-divider">|</div>
+    <div class="counter-box">
+      <div class="counter-label">غلط</div>
+      <div class="counter-value wrong-count" id="wrongCount">۰</div>
+    </div>
+    <div class="counter-divider">|</div>
+    <div class="counter-box">
+      <div class="counter-label">امتیاز</div>
+      <div class="counter-value" id="scoreValue">۰</div>
+    </div>
+  </div>
+
+  <!-- نوار پایین -->
+  <div class="bottom-bar">
+    <div class="result-indicator" id="resultIndicator"></div>
+    <button class="reset-btn" onclick="resetGame()">🔄 شروع مجدد</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   🔷 بازی شناخت اشکال
+   ══════════════════════════════════════════════════════════════ */
+
+/* تعریف اشکال با SVG */
+const allShapes = [
+  {
+    name: 'دایره',
+    svg: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="#ef4444" stroke="#b91c1c" stroke-width="4"/></svg>'
+  },
+  {
+    name: 'مربع',
+    svg: '<svg viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" rx="5" fill="#3b82f6" stroke="#1e40af" stroke-width="4"/></svg>'
+  },
+  {
+    name: 'مثلث',
+    svg: '<svg viewBox="0 0 100 100"><polygon points="50,10 90,85 10,85" fill="#22c55e" stroke="#15803d" stroke-width="4"/></svg>'
+  },
+  {
+    name: 'مستطیل',
+    svg: '<svg viewBox="0 0 100 100"><rect x="5" y="25" width="90" height="50" rx="5" fill="#fbbf24" stroke="#b45309" stroke-width="4"/></svg>'
+  },
+  {
+    name: 'ستاره',
+    svg: '<svg viewBox="0 0 100 100"><polygon points="50,5 61,35 95,35 68,57 79,90 50,70 21,90 32,57 5,35 39,35" fill="#fbbf24" stroke="#b45309" stroke-width="3"/></svg>'
+  },
+  {
+    name: 'بیضی',
+    svg: '<svg viewBox="0 0 100 100"><ellipse cx="50" cy="50" rx="45" ry="30" fill="#a855f7" stroke="#7c3aed" stroke-width="4"/></svg>'
+  },
+  {
+    name: 'لوزی',
+    svg: '<svg viewBox="0 0 100 100"><polygon points="50,5 90,50 50,95 10,50" fill="#ec4899" stroke="#be185d" stroke-width="4"/></svg>'
+  },
+  {
+    name: 'قلب',
+    svg: '<svg viewBox="0 0 100 100"><path d="M50,88 C15,60 5,35 20,20 C35,5 50,20 50,35 C50,20 65,5 80,20 C95,35 85,60 50,88 Z" fill="#ef4444" stroke="#b91c1c" stroke-width="3"/></svg>'
+  }
+];
+
+let currentShape = null;
+let correctCount = 0;
+let wrongCount = 0;
+let score = 0;
+let locked = false;
+
+function startGame() {
+  locked = false;
+  currentShape = allShapes[Math.floor(Math.random() * allShapes.length)];
+  
+  const others = allShapes.filter(s => s.name !== currentShape.name);
+  const shuffledOthers = shuffle([...others]).slice(0, 3);
+  const options = shuffle([currentShape, ...shuffledOthers]);
+
+  document.getElementById('questionText').textContent = currentShape.name;
+  renderOptions(options);
+
+  setTimeout(() => speakQuestion(), 400);
+
+  document.getElementById('resultIndicator').className = 'result-indicator';
+}
+
+function renderOptions(options) {
+  const area = document.getElementById('gameArea');
+  area.innerHTML = '';
+  
+  options.forEach(shape => {
+    const card = document.createElement('div');
+    card.className = 'option-card';
+    card.innerHTML = shape.svg;
+    card.dataset.shapeName = shape.name;
+    card.querySelector('svg').classList.add('shape-svg');
+    card.addEventListener('click', () => selectShape(shape, card));
+    area.appendChild(card);
+  });
+}
+
+function selectShape(shape, card) {
+  if (locked) return;
+  const indicator = document.getElementById('resultIndicator');
+
+  if (shape.name === currentShape.name) {
+    locked = true;
+    card.classList.add('correct');
+    correctCount++;
+    score += 10;
+    document.getElementById('correctCount').textContent = toPersianNum(correctCount);
+    document.getElementById('scoreValue').textContent = toPersianNum(score);
+    indicator.textContent = '✓';
+    indicator.className = 'result-indicator show correct';
+    playSuccessSound();
+    setTimeout(() => startGame(), 1800);
+  } else {
+    card.classList.add('wrong');
+    wrongCount++;
+    score = Math.max(0, score - 3);
+    document.getElementById('wrongCount').textContent = toPersianNum(wrongCount);
+    document.getElementById('scoreValue').textContent = toPersianNum(score);
+    indicator.textContent = '✗';
+    indicator.className = 'result-indicator show wrong';
+    playErrorSound();
+    
+    document.querySelectorAll('.option-card').forEach(c => {
+      if (c.dataset.shapeName === currentShape.name) c.classList.add('correct');
+    });
+    locked = true;
+    setTimeout(() => startGame(), 2000);
+  }
+}
+
+/* ═══ TTS ═══ */
+const googleTTSLangMap = { fa: 'fa', en: 'en', ar: 'ar' };
+const speechLocaleMap = { fa: 'fa-IR', en: 'en-US', ar: 'ar-SA' };
+let currentAudio = null;
+
+function stopSpeaking() {
+  if (currentAudio) { try { currentAudio.pause(); } catch(e){} currentAudio = null; }
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+}
+
+function speakWebSpeech(text, langKey, btn) {
+  if (!('speechSynthesis' in window) || !text) return;
+  try {
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = speechLocaleMap[langKey] || langKey;
+    utter.rate = 0.9;
+    utter.pitch = 1.1;
+    const voices = window.speechSynthesis.getVoices();
+    const voice = voices.find(v => v.lang.replace('_','-').toLowerCase() === utter.lang.toLowerCase());
+    if (voice) utter.voice = voice;
+    if (btn) {
+      btn.classList.add('speaking');
+      utter.onend = () => btn.classList.remove('speaking');
+      utter.onerror = () => btn.classList.remove('speaking');
+    }
+    window.speechSynthesis.speak(utter);
+  } catch(e){}
+}
+
+function speakText(text, langKey, btn) {
+  if (!text) return;
+  stopSpeaking();
+  const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+  if (isFirefox) return speakWebSpeech(text, langKey, btn);
+  
+  const gLang = googleTTSLangMap[langKey];
+  if (!gLang) return speakWebSpeech(text, langKey, btn);
+
+  try {
+    const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${gLang}&q=${encodeURIComponent(text)}&textlen=${text.length}`;
+    const audio = new Audio(url);
+    audio.crossOrigin = 'anonymous';
+    currentAudio = audio;
+    if (btn) {
+      btn.classList.add('speaking');
+      audio.onended = () => btn.classList.remove('speaking');
+      audio.onerror = () => {
+        btn.classList.remove('speaking');
+        speakWebSpeech(text, langKey, btn);
+      };
+    }
+    audio.play().catch(() => speakWebSpeech(text, langKey, btn));
+  } catch(e) {
+    speakWebSpeech(text, langKey, btn);
+  }
+}
+
+function speakQuestion() {
+  if (!currentShape) return;
+  speakText(currentShape.name, 'fa', document.getElementById('speakBtn'));
+}
+
+/* ═══ صداها ═══ */
+function playSuccessSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+      setTimeout(() => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        gain.gain.value = 0.1;
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.25);
+      }, i * 90);
+    });
+  } catch(e){}
+}
+
+function playErrorSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(300, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.3);
+    gain.gain.value = 0.06;
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.3);
+  } catch(e){}
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function toPersianNum(num) {
+  const digits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  return String(num).replace(/\d/g, d => digits[d]);
+}
+
+function resetGame() {
+  correctCount = 0;
+  wrongCount = 0;
+  score = 0;
+  document.getElementById('correctCount').textContent = '۰';
+  document.getElementById('wrongCount').textContent = '۰';
+  document.getElementById('scoreValue').textContent = '۰';
+  startGame();
+}
+
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+
+window.addEventListener('load', startGame);
+</script>
+
+</body>
+</html>

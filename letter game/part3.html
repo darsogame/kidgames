@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+  
+  <div class="bkg" id="1">
+    <h1>کلماتی که اول آنها با حرف (اُ) شروع می شوند را علامت بزن و دکمه ثبت را بزن</h1>
+      <div class="l">
+        <button onclick="px()" type="button"><img src="30.png" alt=""></button>
+      <input class="d" type="checkbox" name="c">
+      <button onclick="py()" type="button"><img src="1.png" alt=""></button>
+      <input class="d" type="checkbox" name="c">
+      <button onclick="pz()" type="button"><img src="19.png" alt=""></button>
+      <input class="d" type="checkbox" name="c">
+      <button onclick="pc()" type="button"><img src="3.png" alt=""></button>
+      <input class="d" type="checkbox" name="check2">
+      <button onclick="pn()" type="button"><img src="16.png" alt=""></button>
+      <input class="d" type="checkbox" name="c">
+      </div>
+      <div>
+        <form action=""><input class="s" type="submit" value="  ثبت  "></form>
+      </div>
+  </div>
+  <audio id="x">
+    <source src="30.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="y">
+    <source src="1.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="z">
+    <source src="19.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="c">
+    <source src="3.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="n">
+    <source src="16.mp3" type="audio/mpeg">
+  </audio>
+  <script>
+  var x = document.getElementById("x"); 
+  var y = document.getElementById("y"); 
+  var z = document.getElementById("z"); 
+  var c = document.getElementById("c"); 
+  var n = document.getElementById("n"); 
+  function px() { 
+    x.play(); 
+  } 
+  function py() { 
+    y.play(); 
+  } 
+  function pz() { 
+    z.play(); 
+  } 
+  function pc() { 
+    c.play(); 
+  } 
+  function pn() { 
+    n.play(); 
+  } 
+  function checkSubmit() {
+    if (document.querySelector('input[name="check2"]:checked')&&document.querySelector('input[name="c"]:checked')) {
+
+window.open("false.html")
+}
+    // بررسی اینکه آیا چک باکس دوم انتخاب شده است یا خیر
+    if (document.querySelector('input[name="check2"]:checked')) {
+      // اگر چک باکس دوم انتخاب شده است، صفحه true.html را باز کنید
+      window.open("true.html")
+    } else {
+      // در غیر این صورت، صفحه false.html را باز کنید
+      window.open("false.html")
+    }
+   }
+
+   // رویداد کلیک روی دکمه Submit را ثبت کنید
+   document.querySelector('form').addEventListener('submit', checkSubmit);
+  </script>
+
+</body>
+</html>

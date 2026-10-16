@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🖐️🖐️ شمارش با انگشتان</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: fixed;
+  }
+
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    padding: 8px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🎯 کانتینر اصلی — همه چیز داخل این جعبه                 */
+  /* ═══════════════════════════════════════════════════════ */
+  .container {
+    width: 100%;
+    max-width: 1000px;
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto auto;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📝 هدر                                                   */
+  /* ═══════════════════════════════════════════════════════ */
+  .header {
+    text-align: center;
+    padding: 2px 0;
+  }
+
+  .header h1 {
+    font-size: clamp(0.95rem, 2.5vw, 1.5rem);
+    color: #fff;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+    line-height: 1.2;
+  }
+
+  .header p {
+    color: #fef3c7;
+    font-size: clamp(0.65rem, 1.5vw, 0.85rem);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🍎 ناحیه اشیاء (تک ردیف، اسکرول افقی)                  */
+  /* ═══════════════════════════════════════════════════════ */
+  .objects-area {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 14px;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    min-height: 55px;
+    max-height: 75px;
+    scrollbar-width: thin;
+  }
+
+  .objects-area::-webkit-scrollbar { height: 4px; }
+  .objects-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+  .count-object {
+    font-size: clamp(24px, 4.5vw, 42px);
+    line-height: 1;
+    animation: popIn 0.4s ease backwards;
+    flex-shrink: 0;
+  }
+
+  .count-object:nth-child(1) { animation-delay: 0.05s; }
+  .count-object:nth-child(2) { animation-delay: 0.1s; }
+  .count-object:nth-child(3) { animation-delay: 0.15s; }
+  .count-object:nth-child(4) { animation-delay: 0.2s; }
+  .count-object:nth-child(5) { animation-delay: 0.25s; }
+  .count-object:nth-child(6) { animation-delay: 0.3s; }
+  .count-object:nth-child(7) { animation-delay: 0.35s; }
+  .count-object:nth-child(8) { animation-delay: 0.4s; }
+  .count-object:nth-child(9) { animation-delay: 0.45s; }
+  .count-object:nth-child(10) { animation-delay: 0.5s; }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0) rotate(-180deg); }
+    to { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🖐️ ناحیه دو دست                                        */
+  /* ═══════════════════════════════════════════════════════ */
+  .hands-area {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border-radius: 14px;
+    padding: 8px 5px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .hands-label {
+    text-align: center;
+    font-size: clamp(0.65rem, 1.5vw, 0.85rem);
+    font-weight: 900;
+    color: #78350f;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 3px 12px;
+    border-radius: 10px;
+    align-self: center;
+    margin-bottom: 5px;
+    flex-shrink: 0;
+  }
+
+  .hands-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: clamp(15px, 4vw, 50px);
+    min-height: 0;
+    padding: 5px;
+    overflow: hidden;
+  }
+
+  /* ═══ دست کامل ═══ */
+  .hand {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 5px 5px;
+    transform-origin: bottom center;
+    height: 100%;
+    max-height: 100%;
+    justify-content: flex-end;
+  }
+
+  .hand-label {
+    position: absolute;
+    top: -3px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: clamp(0.55rem, 1.2vw, 0.75rem);
+    font-weight: 900;
+    color: #78350f;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 2px 10px;
+    border-radius: 10px;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  /* ═══ انگشتان ═══ */
+  .fingers-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 2px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ═══ انگشت ═══ */
+  .finger {
+    width: clamp(20px, 3vw, 32px);
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    margin-bottom: -2px;
+  }
+
+  .finger .finger-body {
+    width: 100%;
+    background: linear-gradient(180deg, #fcd34d 0%, #fbbf24 40%, #f59e0b 100%);
+    border: 2px solid #b45309;
+    border-radius: 40px 40px 0 0;
+    box-shadow: 
+      inset 2px 2px 4px rgba(255, 255, 255, 0.4),
+      0 4px 10px rgba(180, 83, 9, 0.3);
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: bottom center;
+  }
+
+  .finger .finger-body::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 45%;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.45);
+    border-radius: 12px;
+  }
+
+  /* ناخن */
+  .finger .nail {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 55%;
+    height: 16px;
+    background: linear-gradient(180deg, #fef3c7, #fde68a);
+    border-radius: 50% 50% 40% 40%;
+    border: 1.5px solid rgba(180, 83, 9, 0.35);
+    z-index: 2;
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.6);
+  }
+
+  /* حالت بسته (مشت) */
+  .finger.closed .finger-body {
+    background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
+    border-radius: 15px 15px 0 0;
+    opacity: 0.75;
+  }
+
+  .finger.closed .finger-body::after {
+    opacity: 0.3;
+  }
+
+  .finger.closed .nail {
+    display: none;
+  }
+
+  .finger:hover .finger-body {
+    transform: scale(1.05) translateY(-3px);
+    box-shadow: 
+      inset 2px 2px 4px rgba(255, 255, 255, 0.4),
+      0 8px 18px rgba(180, 83, 9, 0.5);
+  }
+
+  /* ═══ کف دست ═══ */
+  .palm {
+    width: clamp(110px, 16vw, 180px);
+    height: clamp(55px, 8vh, 85px);
+    background: linear-gradient(180deg, #fcd34d 0%, #fbbf24 50%, #f59e0b 100%);
+    border: 2px solid #b45309;
+    border-top: none;
+    border-radius: 0 0 45% 45% / 0 0 60% 60%;
+    position: relative;
+    margin-top: -2px;
+    box-shadow: 
+      inset -4px -4px 8px rgba(180, 83, 9, 0.2),
+      inset 4px 4px 8px rgba(255, 255, 255, 0.3),
+      0 6px 15px rgba(180, 83, 9, 0.3);
+    z-index: 1;
+  }
+
+  .palm::before,
+  .palm::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(180, 83, 9, 0.15);
+  }
+
+  .palm::before {
+    width: 40%;
+    height: 25%;
+    top: 25%;
+    left: 15%;
+    transform: rotate(-25deg);
+  }
+
+  .palm::after {
+    width: 35%;
+    height: 20%;
+    top: 55%;
+    left: 20%;
+    transform: rotate(-15deg);
+  }
+
+  /* ═══ مچ دست ═══ */
+  .wrist {
+    width: 60%;
+    height: clamp(18px, 3vh, 30px);
+    background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+    border: 2px solid #b45309;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    margin-top: -2px;
+    position: relative;
+    box-shadow: 
+      inset 0 -3px 6px rgba(180, 83, 9, 0.2),
+      0 4px 10px rgba(180, 83, 9, 0.25);
+    z-index: 0;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📊 شمارنده                                                  */
+  /* ═══════════════════════════════════════════════════════ */
+  .counters {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(8px, 2vw, 20px);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 14px;
+    padding: 6px 15px;
+    flex-shrink: 0;
+  }
+
+  .counter-box {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .counter-label {
+    font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+    color: #6b7280;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  .counter-value {
+    font-size: clamp(1.1rem, 2.8vw, 1.8rem);
+    font-weight: 900;
+    color: #a78bfa;
+    line-height: 1;
+  }
+
+  .counter-value.you { color: #f59e0b; }
+
+  .counter-divider {
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    color: #d1d5db;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* ✅ نوار پایین: دکمه ثبت + تیک + شروع مجدد               */
+  /* ═══════════════════════════════════════════════════════ */
+  .bottom-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(8px, 1.5vw, 15px);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 14px;
+    padding: 6px 12px;
+    flex-shrink: 0;
+  }
+
+  .submit-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .submit-btn {
+    height: clamp(40px, 6.5vh, 55px);
+    padding: 0 clamp(15px, 3vw, 30px);
+    border-radius: 30px;
+    border: 2px solid #fff;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+    font-size: clamp(0.8rem, 1.8vw, 1.05rem);
+    font-weight: 900;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 6px 15px rgba(34, 197, 94, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .submit-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(34, 197, 94, 0.7);
+  }
+
+  .submit-btn:active:not(:disabled) { transform: scale(0.97); }
+
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ⭐ نشانگر تیک/ضربدر */
+  .result-indicator {
+    width: clamp(40px, 6.5vh, 55px);
+    height: clamp(40px, 6.5vh, 55px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.3rem, 3vw, 1.8rem);
+    font-weight: 900;
+    color: #fff;
+    opacity: 0;
+    transform: scale(0.3);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    flex-shrink: 0;
+  }
+
+  .result-indicator.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .result-indicator.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.6);
+  }
+
+  .result-indicator.wrong {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+    animation: wrongShake 0.5s ease;
+  }
+
+  @keyframes wrongShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  .reset-btn {
+    height: clamp(40px, 6.5vh, 55px);
+    padding: 0 clamp(12px, 2.5vw, 25px);
+    border-radius: 30px;
+    border: 2px solid #fff;
+    background: linear-gradient(135deg, #94a3b8, #64748b);
+    color: #fff;
+    font-size: clamp(0.75rem, 1.6vw, 1rem);
+    font-weight: 900;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    white-space: nowrap;
+    box-shadow: 0 6px 15px rgba(100, 116, 139, 0.5);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .reset-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(100, 116, 139, 0.7);
+  }
+
+  .reset-btn:active { transform: scale(0.97); }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📱 چینش موبایل                                          */
+  /* ═══════════════════════════════════════════════════════ */
+  @media (max-width: 640px) {
+    body { padding: 5px; }
+
+    .container {
+      padding: 8px;
+      gap: 6px;
+      border-radius: 16px;
+    }
+
+    .objects-area {
+      padding: 4px 8px;
+      min-height: 45px;
+      max-height: 55px;
+      gap: 4px;
+    }
+
+    .count-object { font-size: 26px; }
+
+    .hands-area { padding: 5px 3px; }
+
+    .hands-label {
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      margin-bottom: 3px;
+    }
+
+    .hands-container {
+      gap: clamp(8px, 3vw, 20px);
+      padding: 2px;
+    }
+
+    .hand {
+      padding: 12px 3px 3px;
+    }
+
+    .hand-label {
+      font-size: 0.55rem;
+      padding: 1px 6px;
+    }
+
+    .finger {
+      width: clamp(18px, 3.5vw, 26px);
+    }
+
+    .finger .finger-body {
+      border-width: 1.5px;
+    }
+
+    .finger .nail {
+      height: 12px;
+      top: 4px;
+    }
+
+    .palm {
+      width: clamp(95px, 22vw, 140px);
+      height: clamp(45px, 7vh, 65px);
+    }
+
+    .wrist {
+      height: clamp(15px, 2.5vh, 22px);
+    }
+
+    .counters {
+      padding: 4px 10px;
+      gap: 10px;
+    }
+
+    .counter-label { font-size: 0.55rem; }
+    .counter-value { font-size: 1.1rem; }
+    .counter-divider { font-size: 1.1rem; }
+
+    .bottom-bar {
+      padding: 5px 8px;
+      gap: 6px;
+    }
+
+    .submit-btn {
+      height: 42px;
+      padding: 0 12px;
+      font-size: 0.8rem;
+    }
+
+    .result-indicator {
+      width: 42px;
+      height: 42px;
+      font-size: 1.3rem;
+    }
+
+    .reset-btn {
+      height: 42px;
+      padding: 0 12px;
+      font-size: 0.75rem;
+    }
+  }
+
+  /* ⭐ موبایل خیلی کوچک */
+  @media (max-width: 380px) {
+    .container { padding: 6px; gap: 5px; }
+
+    .header h1 { font-size: 0.9rem; }
+    .header p { font-size: 0.6rem; }
+
+    .objects-area { min-height: 40px; max-height: 45px; }
+    .count-object { font-size: 22px; }
+
+    .hands-label { font-size: 0.6rem; }
+    .hand-label { font-size: 0.5rem; }
+
+    .finger { width: clamp(16px, 3vw, 22px); }
+    .finger .nail { height: 10px; }
+
+    .palm {
+      width: clamp(80px, 20vw, 120px);
+      height: clamp(40px, 6vh, 55px);
+    }
+
+    .wrist { height: 14px; }
+
+    .submit-btn { padding: 0 10px; font-size: 0.7rem; gap: 3px; }
+    .reset-btn { padding: 0 10px; font-size: 0.7rem; }
+    .result-indicator { width: 38px; height: 38px; font-size: 1.1rem; }
+  }
+
+  /* ⭐ حالت افقی موبایل */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .header { padding: 0; }
+    .header h1 { font-size: 0.85rem; }
+    .header p { font-size: 0.6rem; }
+
+    .objects-area { min-height: 40px; max-height: 50px; }
+
+    .hands-area { padding: 4px; }
+    .hands-label { padding: 1px 6px; font-size: 0.6rem; margin-bottom: 2px; }
+
+    .finger { width: 22px; }
+    .finger .finger-body { border-width: 1.5px; }
+    .finger .nail { height: 10px; }
+
+    .palm { height: 45px; }
+    .wrist { height: 15px; }
+
+    .bottom-bar { padding: 4px 8px; }
+    .submit-btn, .reset-btn, .result-indicator { height: 36px; }
+    .result-indicator { width: 36px; height: 36px; font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🖐️🖐️ شمارش با انگشتان</h1>
+    <p>روی انگشت‌ها کلیک کن تا بالا بیایند</p>
+  </div>
+
+  <!-- اشیاء -->
+  <div class="objects-area" id="objectsArea"></div>
+
+  <!-- دو دست -->
+  <div class="hands-area">
+    <div class="hands-label">👆 روی انگشت‌ها کلیک کن</div>
+    <div class="hands-container">
+
+      <!-- دست راست -->
+      <div class="hand right" id="rightHand">
+        <div class="hand-label">✋ راست</div>
+        <div class="fingers-row" id="rightFingers"></div>
+        <div class="palm"></div>
+        <div class="wrist"></div>
+      </div>
+
+      <!-- دست چپ -->
+      <div class="hand left" id="leftHand">
+        <div class="hand-label">🤚 چپ</div>
+        <div class="fingers-row" id="leftFingers"></div>
+        <div class="palm"></div>
+        <div class="wrist"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- شمارنده -->
+  <div class="counters">
+    <div class="counter-box">
+      <div class="counter-label">تعداد اشیاء</div>
+      <div class="counter-value" id="objectCount">۰</div>
+    </div>
+    <div class="counter-divider">|</div>
+    <div class="counter-box">
+      <div class="counter-label">انگشتان باز</div>
+      <div class="counter-value you" id="fingerCount">۰</div>
+    </div>
+  </div>
+
+  <!-- نوار پایین: دکمه ثبت + تیک/ضربدر + شروع مجدد -->
+  <div class="bottom-bar">
+    <div class="submit-wrapper">
+      <button class="submit-btn" id="submitBtn" onclick="checkAnswer()">✅ ثبت</button>
+      <div class="result-indicator" id="resultIndicator"></div>
+    </div>
+    <button class="reset-btn" onclick="resetGame()">🔄 شروع مجدد</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   🖐️🖐️ شمارش با دو دست
+   ══════════════════════════════════════════════════════════════ */
+
+const objects = ['🍎', '🍌', '🍇', '🍓', '🐱', '🐶', '⭐', '🌸', '🎈', '🍕', '🦋', '🐢', '🍦', '🌻', '🧸', '🎁'];
+let targetCount = 0;
+let openFingers = 0;
+let locked = false;
+
+/* ارتفاع نسبی هر انگشت (نسبت به بلندترین انگشت = middle) */
+const fingerHeights = {
+  pinky: 0.75,
+  ring: 0.9,
+  middle: 1.0,
+  index: 0.95,
+  thumb: 0.7
+};
+
+/* ترتیب فیزیکی انگشتان روی دست چپ (از شست به کوچک) */
+const leftHandOrder = ['thumb', 'index', 'middle', 'ring', 'pinky'];
+
+/* ترتیب فیزیکی انگشتان روی دست راست (آینه‌ای: از کوچک به شست) */
+const rightHandOrder = ['pinky', 'ring', 'middle', 'index', 'thumb'];
+
+/* ═══ شروع بازی ═══ */
+function startGame() {
+  targetCount = Math.floor(Math.random() * 10) + 1;
+  const objectEmoji = objects[Math.floor(Math.random() * objects.length)];
+
+  const objectsArea = document.getElementById('objectsArea');
+  objectsArea.innerHTML = '';
+  for (let i = 0; i < targetCount; i++) {
+    const obj = document.createElement('span');
+    obj.className = 'count-object';
+    obj.textContent = objectEmoji;
+    objectsArea.appendChild(obj);
+  }
+
+  document.getElementById('objectCount').textContent = toPersianNum(targetCount);
+
+  buildHand('rightFingers', rightHandOrder, 'right');
+  buildHand('leftFingers', leftHandOrder, 'left');
+
+  openFingers = 0;
+  locked = false;
+  updateCounter();
+
+  // ریست نشانگر
+  const indicator = document.getElementById('resultIndicator');
+  indicator.className = 'result-indicator';
+  indicator.textContent = '';
+  document.getElementById('submitBtn').disabled = false;
+}
+
+/* ═══ ساخت انگشتان یک دست ═══ */
+function buildHand(containerId, fingerOrder, side) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+
+  // ارتفاع بر اساس ارتفاع صفحه
+  const maxHeight = Math.min(140, Math.max(80, window.innerHeight * 0.15));
+
+  fingerOrder.forEach((fingerName) => {
+    const finger = document.createElement('div');
+    finger.className = 'finger closed';
+    finger.dataset.side = side;
+    finger.dataset.finger = fingerName;
+
+    const heightRatio = fingerHeights[fingerName];
+    const openHeight = Math.round(maxHeight * heightRatio);
+    const closedHeight = Math.round(maxHeight * 0.32);
+
+    finger.dataset.openHeight = openHeight;
+    finger.dataset.closedHeight = closedHeight;
+
+    const body = document.createElement('div');
+    body.className = 'finger-body';
+    body.style.height = closedHeight + 'px';
+
+    const nail = document.createElement('div');
+    nail.className = 'nail';
+    body.appendChild(nail);
+
+    finger.appendChild(body);
+    finger.addEventListener('click', () => toggleFinger(finger));
+    container.appendChild(finger);
+  });
+}
+
+/* ═══ روشن/خاموش کردن انگشت ═══ */
+function toggleFinger(fingerElement) {
+  if (locked) return;
+
+  const openHeight = parseInt(fingerElement.dataset.openHeight);
+  const closedHeight = parseInt(fingerElement.dataset.closedHeight);
+  const body = fingerElement.querySelector('.finger-body');
+
+  if (fingerElement.classList.contains('closed')) {
+    fingerElement.classList.remove('closed');
+    fingerElement.classList.add('up');
+    body.style.height = openHeight + 'px';
+    openFingers++;
+    playClickSound();
+  } else {
+    fingerElement.classList.remove('up');
+    fingerElement.classList.add('closed');
+    body.style.height = closedHeight + 'px';
+    openFingers--;
+    playClickSound();
+  }
+
+  updateCounter();
+  resetIndicator();
+}
+
+/* ═══ به‌روزرسانی شمارنده ═══ */
+function updateCounter() {
+  document.getElementById('fingerCount').textContent = toPersianNum(openFingers);
+}
+
+/* ═══ ریست نشانگر ═══ */
+function resetIndicator() {
+  const indicator = document.getElementById('resultIndicator');
+  indicator.className = 'result-indicator';
+  indicator.textContent = '';
+}
+
+/* ═══ بررسی پاسخ ═══ */
+function checkAnswer() {
+  if (locked) return;
+
+  const indicator = document.getElementById('resultIndicator');
+  const submitBtn = document.getElementById('submitBtn');
+
+  if (openFingers === targetCount) {
+    locked = true;
+    indicator.textContent = '✓';
+    indicator.className = 'result-indicator show correct';
+    submitBtn.disabled = true;
+    playSuccessSound();
+
+    setTimeout(() => {
+      startGame();
+    }, 2500);
+  } else {
+    indicator.textContent = '✗';
+    indicator.className = 'result-indicator show wrong';
+    playErrorSound();
+
+    setTimeout(() => {
+      resetIndicator();
+    }, 2000);
+  }
+}
+
+/* ═══ شروع مجدد ═══ */
+function resetGame() {
+  startGame();
+}
+
+/* ═══ پخش صدا ═══ */
+function playClickSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 700;
+    gain.gain.value = 0.06;
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.08);
+  } catch (e) {}
+}
+
+function playSuccessSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((freq, i) => {
+      setTimeout(() => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        gain.gain.value = 0.1;
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.25);
+      }, i * 90);
+    });
+  } catch (e) {}
+}
+
+function playErrorSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(300, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.3);
+    gain.gain.value = 0.06;
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.3);
+  } catch (e) {}
+}
+
+/* ═══ تبدیل اعداد ═══ */
+function toPersianNum(num) {
+  const digits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  return String(num).replace(/\d/g, d => digits[d]);
+}
+
+/* ═══ شروع ═══ */
+window.addEventListener('load', () => {
+  startGame();
+  
+  // بازسازی در تغییر اندازه صفحه
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      // فقط ارتفاع انگشتان را به‌روز کن
+      const maxHeight = Math.min(140, Math.max(80, window.innerHeight * 0.15));
+      document.querySelectorAll('.finger').forEach(finger => {
+        const ratio = fingerHeights[finger.dataset.finger];
+        const openHeight = Math.round(maxHeight * ratio);
+        const closedHeight = Math.round(maxHeight * 0.32);
+        finger.dataset.openHeight = openHeight;
+        finger.dataset.closedHeight = closedHeight;
+        
+        if (finger.classList.contains('up')) {
+          finger.querySelector('.finger-body').style.height = openHeight + 'px';
+        } else {
+          finger.querySelector('.finger-body').style.height = closedHeight + 'px';
+        }
+      });
+    }, 200);
+  });
+});
+</script>
+
+</body>
+</html>

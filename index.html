@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ورود به بازی‌های پیش‌دبستانی 🎈</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #FFD93D 0%, #FF6B9D 50%, #6BCBFF 100%);
+      background-size: 300% 300%;
+      animation: bgMove 12s ease infinite;
+      padding: 20px;
+    }
+
+    @keyframes bgMove {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .login-box {
+      background: #fff;
+      border-radius: 40px;
+      padding: 45px 40px;
+      width: 100%;
+      max-width: 460px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      text-align: center;
+      border: 6px dashed #FFD93D;
+      position: relative;
+    }
+
+    .login-box::before {
+      content: "🎨";
+      position: absolute;
+      top: -35px; left: 20px;
+      font-size: 55px;
+    }
+    .login-box::after {
+      content: "🧸";
+      position: absolute;
+      bottom: -35px; right: 20px;
+      font-size: 55px;
+    }
+
+    h1 {
+      font-family: 'Lalezar', cursive;
+      font-size: 36px;
+      color: #FF6B9D;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #777;
+      margin-bottom: 30px;
+    }
+
+    .emoji-row {
+      font-size: 34px;
+      letter-spacing: 8px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      text-align: right;
+      font-weight: 700;
+      color: #444;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 16px 20px;
+      font-size: 18px;
+      border: 3px solid #6BCBFF;
+      border-radius: 20px;
+      outline: none;
+      text-align: center;
+      font-family: 'Vazirmatn', sans-serif;
+      letter-spacing: 1px;
+      transition: 0.2s;
+      direction: ltr;
+    }
+
+    input[type="text"]:focus {
+      border-color: #FF6B9D;
+      box-shadow: 0 0 0 5px rgba(255,107,157,0.15);
+    }
+
+    button {
+      margin-top: 22px;
+      width: 100%;
+      padding: 16px;
+      font-size: 20px;
+      font-weight: 700;
+      font-family: 'Lalezar', cursive;
+      color: #fff;
+      background: linear-gradient(135deg, #FF6B9D, #FFD93D);
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 6px 0 #d94f7c;
+    }
+
+    button:hover { transform: translateY(-2px); }
+    button:active { transform: translateY(3px); box-shadow: 0 2px 0 #d94f7c; }
+
+    .error {
+      margin-top: 18px;
+      padding: 12px;
+      background: #FFE0E0;
+      color: #C0392B;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      display: none;
+    }
+    .error.show { display: block; animation: shake 0.4s; }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+
+    .hint {
+      margin-top: 22px;
+      font-size: 13px;
+      color: #999;
+      background: #F7F7F7;
+      padding: 10px;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <div class="emoji-row">🌟 🎈 🌈</div>
+    <h1>خوش آمدی!</h1>
+    <p class="subtitle">برای ورود، کلید خودت را وارد کن</p>
+
+    <form id="loginForm">
+      <label for="keyInput">🔑 کلید ورود</label>
+      <input type="text" id="keyInput" placeholder="USER-XXXXX-000" autocomplete="off" required>
+      <button type="submit">ورود به بازی‌ها 🚀</button>
+    </form>
+
+    <div class="error" id="errorMsg"></div>
+
+    <div class="hint">
+      💡 نمونه: <b>USER-AHMAD-001</b>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+</body>
+</html>

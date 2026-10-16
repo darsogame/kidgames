@@ -1,0 +1,40 @@
+{
+    "users": [
+      {
+        "key": "ADMIN-2024-XYZ",
+        "name": "مدیر سیستم",
+        "ip": null,
+        "permissions": ["game", "lesson", "listening", "reading", "writing", "speaking", "admin"]
+      },
+      {
+        "key": "USER-ALI-005",
+        "name": "احمد",
+        "ip": null,
+        "permissions": ["game", "lesson", "listening", "reading", "writing", "speaking"]
+      },
+      {
+        "key": "USER-SARA-002",
+        "name": "سارا",
+        "ip": null,
+        "permissions": ["game", "lesson", "listening", "reading", "writing", "speaking"]
+      },
+      {
+        "key": "USER-ALI-003",
+        "name": "علی",
+        "ip": null,
+        "permissions": ["game", "lesson", "listening", "reading", "writing", "speaking"]
+      },
+      {
+        "key": "PREMIUM-MARYAM-004",
+        "name": "مریم",
+        "ip": null,
+        "permissions": ["game", "lesson", "listening", "reading", "writing", "speaking"]
+      },
+      {
+        "key": "TEST-GUEST-999",
+        "name": "کاربر آزمایشی",
+        "ip": null,
+        "permissions": ["game", "lesson"]
+      }
+    ]
+  }

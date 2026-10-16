@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بازی‌های پیش‌دبستانی 🎮</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #FFF5CC 0%, #FFE0EF 50%, #DDF3FF 100%);
+      background-attachment: fixed;
+      padding: 20px;
+      padding-bottom: 60px;
+    }
+
+    /* ===== هدر ===== */
+    header {
+      max-width: 1100px;
+      margin: 0 auto 30px;
+      background: #fff;
+      border-radius: 28px;
+      padding: 20px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      border: 4px solid #FFD93D;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .welcome {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .avatar {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FF6B9D, #FFD93D);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 30px;
+      box-shadow: 0 4px 12px rgba(255,107,157,0.4);
+    }
+
+    .welcome-text h2 {
+      font-family: 'Lalezar', cursive;
+      font-size: 24px;
+      color: #FF6B9D;
+      margin-bottom: 3px;
+    }
+
+    .welcome-text p {
+      font-size: 13px;
+      color: #888;
+    }
+
+    .logout-btn {
+      background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 18px;
+      cursor: pointer;
+      font-family: 'Vazirmatn', sans-serif;
+      box-shadow: 0 5px 0 #d94f4f;
+      transition: 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logout-btn:hover { transform: translateY(-2px); }
+    .logout-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #d94f4f; }
+
+    /* ===== عنوان ===== */
+    .page-title {
+      text-align: center;
+      font-family: 'Lalezar', cursive;
+      font-size: 40px;
+      color: #6BCBFF;
+      margin: 30px 0 10px;
+      text-shadow: 2px 3px 0 #fff;
+    }
+
+    .page-subtitle {
+      text-align: center;
+      color: #999;
+      margin-bottom: 35px;
+      font-size: 16px;
+    }
+
+    /* ===== شبکه بازی‌ها ===== */
+    .games-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 22px;
+    }
+
+    .game-card {
+      background: #fff;
+      border-radius: 26px;
+      padding: 28px 18px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.07);
+      border: 4px solid transparent;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .game-card:hover {
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.13);
+    }
+
+    .game-card .icon {
+      font-size: 62px;
+      margin-bottom: 12px;
+      display: block;
+      line-height: 1;
+    }
+
+    .game-card .title {
+      font-family: 'Lalezar', cursive;
+      font-size: 22px;
+      color: #444;
+    }
+
+    /* رنگ هر کارت */
+    .game-card.c1 { border-color: #FF6B9D; background: #FFF0F6; }
+    .game-card.c2 { border-color: #6BCBFF; background: #EAF7FF; }
+    .game-card.c3 { border-color: #FFD93D; background: #FFFBEA; }
+    .game-card.c4 { border-color: #7ED957; background: #F0FBEA; }
+    .game-card.c5 { border-color: #B980FF; background: #F5EEFF; }
+    .game-card.c6 { border-color: #FF9F43; background: #FFF4E8; }
+    .game-card.c7 { border-color: #26D0CE; background: #E7FBFB; }
+    .game-card.c8 { border-color: #FF6B6B; background: #FFEFEF; }
+
+    /* ===== موبایل ===== */
+    @media (max-width: 500px) {
+      .page-title { font-size: 30px; }
+      .welcome-text h2 { font-size: 20px; }
+      .avatar { width: 50px; height: 50px; font-size: 24px; }
+      .logout-btn { padding: 10px 16px; font-size: 14px; }
+      header { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="welcome">
+      <div class="avatar">🧒</div>
+      <div class="welcome-text">
+        <h2 id="userName">کاربر</h2>
+        <p>خوش آمدی! آماده بازی هستی؟ 🎉</p>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">
+      🚪 خروج
+    </button>
+  </header>
+
+  <h1 class="page-title">🎮 بازی‌های من</h1>
+  <p class="page-subtitle">یکی از بازی‌ها را انتخاب کن و شروع کن!</p>
+
+  <div class="games-grid">
+    <a href="letter game/index.html"         class="game-card c1"><span class="icon">📝</span><div class="title">کلمات</div></a>
+    <a href="color.html"        class="game-card c2"><span class="icon">🎨</span><div class="title">رنگ‌ها</div></a>
+    <a href="animals/animal-sort.html"  class="game-card c3"><span class="icon">🐄</span><div class="title">حیوانات اهلی و وحشی</div></a>
+    <a href="animals/animals.html"  class="game-card c4"><span class="icon">🔊</span><div class="title">صدای حیوانات</div></a>
+    <a href="finger.html"   class="game-card c5"><span class="icon">✋</span><div class="title">شمارش با دست</div></a>
+    <a href="tally.html"   class="game-card c6"><span class="icon">🪵</span><div class="title">شمارش با چوب‌خط</div></a>
+    <a href="plus-min.html"    class="game-card c7"><span class="icon">➕</span><div class="title">جمع و تفریق</div></a>
+    <a href="shapes.html"        class="game-card c8"><span class="icon">🔷</span><div class="title">شناخت شکل‌ها</div></a>
+  </div>
+
+  <script>
+    // ==== محافظت: اگر کاربر وارد نشده، برو به لاگین ====
+    const user = JSON.parse(localStorage.getItem('pg_current_user') || 'null');
+    if (!user) {
+      window.location.href = 'index.html';
+    } else {
+      document.getElementById('userName').textContent = user.name;
+    }
+
+    // ==== خروج ====
+    function logout() {
+      if (confirm('از حسابت خارج می‌شوی؟ 🚪')) {
+        localStorage.removeItem('pg_current_user');
+        window.location.href = 'index.html';
+      }
+    }
+  </script>
+</body>
+</html>

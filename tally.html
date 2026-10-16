@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>✏️ شمارش چوب‌خط</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: fixed;
+  }
+
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: linear-gradient(135deg, #34d399 0%, #06b6d4 100%);
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    padding: 8px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🎯 کانتینر اصلی — همه چیز داخل این جعبه                 */
+  /* ═══════════════════════════════════════════════════════ */
+  .container {
+    width: 100%;
+    max-width: 950px;
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto auto;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📝 هدر                                                   */
+  /* ═══════════════════════════════════════════════════════ */
+  .header {
+    text-align: center;
+    padding: 2px 0;
+  }
+
+  .header h1 {
+    font-size: clamp(0.95rem, 2.5vw, 1.5rem);
+    color: #fff;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+    line-height: 1.2;
+  }
+
+  .header p {
+    color: #dcfce7;
+    font-size: clamp(0.65rem, 1.5vw, 0.85rem);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🍎 ناحیه اشیاء (تک ردیف، اسکرول افقی)                  */
+  /* ═══════════════════════════════════════════════════════ */
+  .objects-area {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 14px;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    min-height: 55px;
+    max-height: 75px;
+    scrollbar-width: thin;
+  }
+
+  .objects-area::-webkit-scrollbar { height: 4px; }
+  .objects-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+  .count-object {
+    font-size: clamp(24px, 4.5vw, 42px);
+    line-height: 1;
+    animation: popIn 0.4s ease backwards;
+    flex-shrink: 0;
+  }
+
+  .count-object:nth-child(1) { animation-delay: 0.05s; }
+  .count-object:nth-child(2) { animation-delay: 0.1s; }
+  .count-object:nth-child(3) { animation-delay: 0.15s; }
+  .count-object:nth-child(4) { animation-delay: 0.2s; }
+  .count-object:nth-child(5) { animation-delay: 0.25s; }
+  .count-object:nth-child(6) { animation-delay: 0.3s; }
+  .count-object:nth-child(7) { animation-delay: 0.35s; }
+  .count-object:nth-child(8) { animation-delay: 0.4s; }
+  .count-object:nth-child(9) { animation-delay: 0.45s; }
+  .count-object:nth-child(10) { animation-delay: 0.5s; }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0) rotate(-180deg); }
+    to { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📦 ناحیه کار: جعبه + کادر (کنار هم در دسکتاپ، زیر هم در موبایل) */
+  /* ═══════════════════════════════════════════════════════ */
+  .workspace {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 8px;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* ⭐ جعبه چوب‌خط */
+  .tally-box {
+    background: linear-gradient(135deg, #fef9c3, #fde68a);
+    border-radius: 14px;
+    padding: 8px;
+    border: 2px dashed #92400e;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .tally-box-title {
+    text-align: center;
+    font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+    font-weight: 900;
+    color: #78350f;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 2px 10px;
+    border-radius: 10px;
+    align-self: center;
+    margin-bottom: 6px;
+    flex-shrink: 0;
+  }
+
+  .tally-source {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    justify-content: center;
+    gap: 5px;
+    padding: 3px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  .tally-source::-webkit-scrollbar { width: 4px; }
+  .tally-source::-webkit-scrollbar-thumb { background: #d97706; border-radius: 4px; }
+
+  /* ⭐ چوب‌خط قابل کشیدن */
+  .draggable-tally {
+    width: clamp(10px, 1.8vw, 16px);
+    height: clamp(30px, 5vh, 50px);
+    background: linear-gradient(180deg, #78350f 0%, #451a03 100%);
+    border-radius: 2px;
+    box-shadow: 1px 1px 3px rgba(120, 53, 15, 0.4);
+    cursor: grab;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .draggable-tally::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+    border-radius: 2px;
+  }
+
+  .draggable-tally:hover {
+    transform: scale(1.2) translateY(-3px);
+    box-shadow: 2px 6px 12px rgba(120, 53, 15, 0.6);
+  }
+
+  .draggable-tally:active { cursor: grabbing; }
+
+  .draggable-tally.dragging {
+    opacity: 0.3;
+    transform: scale(0.9);
+  }
+
+  /* ⭐ کادر انداختن */
+  .drop-area {
+    background: linear-gradient(135deg, #fef9c3, #fde68a);
+    border-radius: 14px;
+    padding: 8px;
+    border: 2px solid #b45309;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .drop-area.drag-over {
+    background: linear-gradient(135deg, #fef08a, #fcd34d);
+    border-color: #22c55e;
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+  }
+
+  .drop-area-title {
+    text-align: center;
+    font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+    font-weight: 900;
+    color: #78350f;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 2px 10px;
+    border-radius: 10px;
+    align-self: center;
+    margin-bottom: 6px;
+    flex-shrink: 0;
+  }
+
+  .drop-groups {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 3px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  .drop-groups::-webkit-scrollbar { width: 4px; }
+  .drop-groups::-webkit-scrollbar-thumb { background: #d97706; border-radius: 4px; }
+
+  .drop-empty {
+    color: #92400e;
+    font-weight: 700;
+    font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+    opacity: 0.5;
+    text-align: center;
+    padding: 15px 10px;
+    width: 100%;
+  }
+
+  /* ⭐ گروه چوب‌خط */
+  .tally-group {
+    position: relative;
+    width: clamp(45px, 6vw, 70px);
+    height: clamp(55px, 8vh, 85px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: tallyIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    flex-shrink: 0;
+  }
+
+  @keyframes tallyIn {
+    from { opacity: 0; transform: scale(0.5) rotate(-10deg); }
+    to { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  .tally-line {
+    position: absolute;
+    width: clamp(3px, 0.6vw, 5px);
+    height: clamp(45px, 6.5vh, 70px);
+    background: linear-gradient(180deg, #78350f 0%, #451a03 100%);
+    border-radius: 2px;
+    box-shadow: 1px 1px 3px rgba(120, 53, 15, 0.3);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .tally-line:nth-child(1) { left: 15%; }
+  .tally-line:nth-child(2) { left: 32%; }
+  .tally-line:nth-child(3) { left: 49%; }
+  .tally-line:nth-child(4) { left: 66%; }
+
+  .tally-line.diagonal {
+    width: clamp(3px, 0.6vw, 5px);
+    height: clamp(55px, 8vh, 85px);
+    background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
+    left: 41%;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(65deg);
+    box-shadow: 
+      1px 1px 3px rgba(153, 27, 27, 0.5),
+      0 0 8px rgba(220, 38, 38, 0.4);
+    border-radius: 2px;
+    z-index: 2;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📊 شمارنده                                                  */
+  /* ═══════════════════════════════════════════════════════ */
+  .counters {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(8px, 2vw, 20px);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 14px;
+    padding: 6px 15px;
+    min-height: 0;
+    flex-shrink: 0;
+  }
+
+  .counter-box {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .counter-label {
+    font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+    color: #6b7280;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  .counter-value {
+    font-size: clamp(1.1rem, 2.8vw, 1.8rem);
+    font-weight: 900;
+    color: #34d399;
+    line-height: 1;
+  }
+
+  .counter-value.you { color: #f59e0b; }
+
+  .counter-divider {
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    color: #d1d5db;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* ✅ نوار پایین: دکمه ثبت + تیک + شروع مجدد               */
+  /* ═══════════════════════════════════════════════════════ */
+  .bottom-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(8px, 1.5vw, 15px);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 14px;
+    padding: 6px 12px;
+    flex-shrink: 0;
+  }
+
+  .submit-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .submit-btn {
+    height: clamp(40px, 6.5vh, 55px);
+    padding: 0 clamp(15px, 3vw, 30px);
+    border-radius: 30px;
+    border: 2px solid #fff;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+    font-size: clamp(0.8rem, 1.8vw, 1.05rem);
+    font-weight: 900;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 6px 15px rgba(245, 158, 11, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .submit-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.7);
+  }
+
+  .submit-btn:active:not(:disabled) { transform: scale(0.97); }
+
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ⭐ نشانگر تیک/ضربدر */
+  .result-indicator {
+    width: clamp(40px, 6.5vh, 55px);
+    height: clamp(40px, 6.5vh, 55px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.3rem, 3vw, 1.8rem);
+    font-weight: 900;
+    color: #fff;
+    opacity: 0;
+    transform: scale(0.3);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    flex-shrink: 0;
+  }
+
+  .result-indicator.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .result-indicator.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.6);
+  }
+
+  .result-indicator.wrong {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+    animation: wrongShake 0.5s ease;
+  }
+
+  @keyframes wrongShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  .reset-btn {
+    height: clamp(40px, 6.5vh, 55px);
+    padding: 0 clamp(12px, 2.5vw, 25px);
+    border-radius: 30px;
+    border: 2px solid #fff;
+    background: linear-gradient(135deg, #94a3b8, #64748b);
+    color: #fff;
+    font-size: clamp(0.75rem, 1.6vw, 1rem);
+    font-weight: 900;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    white-space: nowrap;
+    box-shadow: 0 6px 15px rgba(100, 116, 139, 0.5);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .reset-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(100, 116, 139, 0.7);
+  }
+
+  .reset-btn:active { transform: scale(0.97); }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📱 چینش موبایل — کار در دو ردیف                          */
+  /* ═══════════════════════════════════════════════════════ */
+  @media (max-width: 640px) {
+    body { padding: 5px; }
+
+    .container {
+      padding: 8px;
+      gap: 6px;
+      border-radius: 16px;
+    }
+
+    /* اشیاء کوچک‌تر */
+    .objects-area {
+      padding: 4px 8px;
+      min-height: 45px;
+      max-height: 55px;
+      gap: 4px;
+    }
+
+    .count-object { font-size: 26px; }
+
+    /* جعبه و کادر زیر هم */
+    .workspace {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr 1.5fr;
+      gap: 6px;
+    }
+
+    .tally-box,
+    .drop-area {
+      padding: 5px;
+      border-radius: 10px;
+    }
+
+    .tally-box-title,
+    .drop-area-title {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      margin-bottom: 3px;
+    }
+
+    .tally-source {
+      gap: 3px;
+      padding: 2px;
+    }
+
+    .draggable-tally {
+      width: 10px;
+      height: 28px;
+    }
+
+    .drop-groups {
+      gap: 6px;
+      padding: 3px;
+    }
+
+    .tally-group {
+      width: 42px;
+      height: 55px;
+    }
+
+    .tally-line { height: 45px; }
+    .tally-line.diagonal { height: 55px; }
+
+    /* شمارنده و دکمه‌ها در یک ردیف */
+    .counters {
+      padding: 4px 10px;
+      gap: 10px;
+    }
+
+    .counter-label { font-size: 0.55rem; }
+    .counter-value { font-size: 1.1rem; }
+    .counter-divider { font-size: 1.1rem; }
+
+    .bottom-bar {
+      padding: 5px 8px;
+      gap: 6px;
+    }
+
+    .submit-btn {
+      height: 42px;
+      padding: 0 12px;
+      font-size: 0.8rem;
+    }
+
+    .result-indicator {
+      width: 42px;
+      height: 42px;
+      font-size: 1.3rem;
+    }
+
+    .reset-btn {
+      height: 42px;
+      padding: 0 12px;
+      font-size: 0.75rem;
+    }
+  }
+
+  /* ⭐ موبایل خیلی کوچک */
+  @media (max-width: 380px) {
+    .container { padding: 6px; gap: 5px; }
+
+    .header h1 { font-size: 0.9rem; }
+    .header p { font-size: 0.6rem; }
+
+    .objects-area { min-height: 40px; max-height: 45px; }
+    .count-object { font-size: 22px; }
+
+    .tally-box-title,
+    .drop-area-title { font-size: 0.6rem; }
+
+    .draggable-tally { width: 8px; height: 24px; }
+
+    .tally-group { width: 36px; height: 48px; }
+    .tally-line { height: 38px; width: 3px; }
+    .tally-line.diagonal { height: 46px; width: 3px; }
+
+    .submit-btn { padding: 0 10px; font-size: 0.7rem; gap: 3px; }
+    .reset-btn { padding: 0 10px; font-size: 0.7rem; }
+    .result-indicator { width: 38px; height: 38px; font-size: 1.1rem; }
+  }
+
+  /* ⭐ دسکتاپ: حالت افقی */
+  @media (min-width: 641px) {
+    .workspace {
+      grid-template-columns: 1fr 2fr;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>✏️ شمارش چوب‌خط</h1>
+    <p>چوب‌خط‌ها را بکش و به کادر بینداز</p>
+  </div>
+
+  <!-- اشیاء -->
+  <div class="objects-area" id="objectsArea"></div>
+
+  <!-- ناحیه کار -->
+  <div class="workspace">
+    <!-- جعبه چوب‌خط -->
+    <div class="tally-box">
+      <div class="tally-box-title">📦 جعبه چوب‌خط</div>
+      <div class="tally-source" id="tallySource"></div>
+    </div>
+
+    <!-- کادر انداختن -->
+    <div class="drop-area" id="dropArea">
+      <div class="drop-area-title">🎯 چوب‌خط‌های تو</div>
+      <div class="drop-groups" id="dropGroups">
+        <div class="drop-empty" id="dropEmpty">چوب‌خط‌ها را اینجا بینداز...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- شمارنده -->
+  <div class="counters">
+    <div class="counter-box">
+      <div class="counter-label">تعداد اشیاء</div>
+      <div class="counter-value" id="objectCount">۰</div>
+    </div>
+    <div class="counter-divider">|</div>
+    <div class="counter-box">
+      <div class="counter-label">چوب‌خط‌ها</div>
+      <div class="counter-value you" id="tallyCount">۰</div>
+    </div>
+  </div>
+
+  <!-- نوار پایین: دکمه ثبت + تیک/ضربدر + شروع مجدد -->
+  <div class="bottom-bar">
+    <div class="submit-wrapper">
+      <button class="submit-btn" id="submitBtn" onclick="checkAnswer()">✅ ثبت</button>
+      <div class="result-indicator" id="resultIndicator"></div>
+    </div>
+    <button class="reset-btn" onclick="resetGame()">🔄 شروع مجدد</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   ✏️ منطق بازی شمارش چوب‌خط (Drag & Drop)
+   ══════════════════════════════════════════════════════════════ */
+
+const objects = ['🍎', '🍌', '🍇', '🍓', '🐱', '🐶', '⭐', '🌸', '🎈', '🍕', '🦋', '🐢', '🍦', '🌻', '🧸', '🎁', '🍭', '🐰'];
+let targetCount = 0;
+let currentTallies = 0;
+let locked = false;
+let draggedTally = null;
+
+const TOTAL_TALLIES = 15;
+
+/* ═══ شروع بازی ═══ */
+function startGame() {
+  targetCount = Math.floor(Math.random() * 10) + 1;
+  const emoji = objects[Math.floor(Math.random() * objects.length)];
+
+  const objectsArea = document.getElementById('objectsArea');
+  objectsArea.innerHTML = '';
+  for (let i = 0; i < targetCount; i++) {
+    const obj = document.createElement('span');
+    obj.className = 'count-object';
+    obj.textContent = emoji;
+    objectsArea.appendChild(obj);
+  }
+
+  document.getElementById('objectCount').textContent = toPersianNum(targetCount);
+
+  currentTallies = 0;
+  locked = false;
+
+  buildTallySource();
+  renderDropGroups();
+
+  const indicator = document.getElementById('resultIndicator');
+  indicator.className = 'result-indicator';
+  indicator.textContent = '';
+
+  document.getElementById('submitBtn').disabled = false;
+}
+
+/* ═══ ساخت جعبه پر چوب‌خط ═══ */
+function buildTallySource() {
+  const source = document.getElementById('tallySource');
+  source.innerHTML = '';
+
+  for (let i = 0; i < TOTAL_TALLIES; i++) {
+    const tally = document.createElement('div');
+    tally.className = 'draggable-tally';
+    tally.draggable = true;
+    tally.dataset.id = 'tally-' + i;
+
+    tally.addEventListener('dragstart', handleDragStart);
+    tally.addEventListener('dragend', handleDragEnd);
+    tally.addEventListener('touchstart', handleTouchStart, { passive: false });
+    tally.addEventListener('touchmove', handleTouchMove, { passive: false });
+    tally.addEventListener('touchend', handleTouchEnd);
+    tally.addEventListener('click', () => quickAdd(tally));
+
+    source.appendChild(tally);
+  }
+}
+
+/* ═══ Drag & Drop با ماوس ═══ */
+function handleDragStart(e) {
+  if (locked) { e.preventDefault(); return; }
+  draggedTally = this;
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', this.dataset.id);
+}
+
+function handleDragEnd(e) {
+  this.classList.remove('dragging');
+  draggedTally = null;
+}
+
+/* ═══ Drag & Drop با لمس (موبایل) ═══ */
+let touchStartTime = 0;
+let touchStartX = 0;
+let touchStartY = 0;
+
+function handleTouchStart(e) {
+  if (locked) return;
+  const touch = e.touches[0];
+  touchStartX = touch.clientX;
+  touchStartY = touch.clientY;
+  touchStartTime = Date.now();
+  draggedTally = this;
+}
+
+function handleTouchMove(e) {
+  if (!draggedTally || locked) return;
+  e.preventDefault();
+
+  const touch = e.touches[0];
+  const moveDistance = Math.hypot(touch.clientX - touchStartX, touch.clientY - touchStartY);
+
+  if (moveDistance > 10) {
+    draggedTally.classList.add('dragging');
+
+    const dropArea = document.getElementById('dropArea');
+    const rect = dropArea.getBoundingClientRect();
+    const isOverDrop = touch.clientX >= rect.left && touch.clientX <= rect.right &&
+                       touch.clientY >= rect.top && touch.clientY <= rect.bottom;
+
+    if (isOverDrop) {
+      dropArea.classList.add('drag-over');
+    } else {
+      dropArea.classList.remove('drag-over');
+    }
+  }
+}
+
+function handleTouchEnd(e) {
+  if (!draggedTally) return;
+  e.preventDefault();
+
+  const touch = e.changedTouches[0];
+  const moveDistance = Math.hypot(touch.clientX - touchStartX, touch.clientY - touchStartY);
+  const touchDuration = Date.now() - touchStartTime;
+
+  const dropArea = document.getElementById('dropArea');
+  dropArea.classList.remove('drag-over');
+
+  if (moveDistance > 10) {
+    const rect = dropArea.getBoundingClientRect();
+    const isOverDrop = touch.clientX >= rect.left && touch.clientX <= rect.right &&
+                       touch.clientY >= rect.top && touch.clientY <= rect.bottom;
+
+    if (isOverDrop) {
+      dropTally();
+    }
+    draggedTally.classList.remove('dragging');
+  } else if (touchDuration < 300) {
+    quickAdd(draggedTally);
+  }
+
+  draggedTally = null;
+}
+
+/* ═══ اضافه کردن با کلیک ═══ */
+function quickAdd(tallyElement) {
+  if (locked) return;
+  if (currentTallies >= TOTAL_TALLIES) return;
+
+  tallyElement.style.visibility = 'hidden';
+  tallyElement.style.pointerEvents = 'none';
+
+  currentTallies++;
+  renderDropGroups();
+  playClickSound();
+  resetIndicator();
+}
+
+/* ═══ ریست نشانگر ═══ */
+function resetIndicator() {
+  const indicator = document.getElementById('resultIndicator');
+  indicator.className = 'result-indicator';
+  indicator.textContent = '';
+}
+
+/* ═══ رویدادهای Drop Area ═══ */
+const dropArea = document.getElementById('dropArea');
+
+dropArea.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  if (!locked) dropArea.classList.add('drag-over');
+});
+
+dropArea.addEventListener('dragleave', (e) => {
+  if (!dropArea.contains(e.relatedTarget)) {
+    dropArea.classList.remove('drag-over');
+  }
+});
+
+dropArea.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropArea.classList.remove('drag-over');
+  if (locked || !draggedTally) return;
+  dropTally();
+});
+
+/* ═══ انداختن چوب‌خط ═══ */
+function dropTally() {
+  if (!draggedTally || currentTallies >= TOTAL_TALLIES) return;
+
+  draggedTally.style.visibility = 'hidden';
+  draggedTally.style.pointerEvents = 'none';
+  draggedTally.classList.remove('dragging');
+
+  currentTallies++;
+  renderDropGroups();
+  playClickSound();
+  resetIndicator();
+}
+
+/* ═══ رسم گروه‌های چوب‌خط در کادر ═══ */
+function renderDropGroups() {
+  const container = document.getElementById('dropGroups');
+  const empty = document.getElementById('dropEmpty');
+
+  container.querySelectorAll('.tally-group').forEach(g => g.remove());
+
+  if (currentTallies === 0) {
+    if (empty) empty.style.display = 'block';
+    document.getElementById('tallyCount').textContent = toPersianNum(0);
+    return;
+  }
+
+  if (empty) empty.style.display = 'none';
+
+  const fullGroups = Math.floor(currentTallies / 5);
+  const remaining = currentTallies % 5;
+
+  for (let g = 0; g < fullGroups; g++) {
+    const group = document.createElement('div');
+    group.className = 'tally-group';
+
+    for (let i = 0; i < 4; i++) {
+      const line = document.createElement('div');
+      line.className = 'tally-line';
+      group.appendChild(line);
+    }
+
+    const diagonal = document.createElement('div');
+    diagonal.className = 'tally-line diagonal';
+    group.appendChild(diagonal);
+
+    container.appendChild(group);
+  }
+
+  if (remaining > 0) {
+    const group = document.createElement('div');
+    group.className = 'tally-group';
+
+    for (let i = 0; i < remaining; i++) {
+      const line = document.createElement('div');
+      line.className = 'tally-line';
+      group.appendChild(line);
+    }
+
+    container.appendChild(group);
+  }
+
+  document.getElementById('tallyCount').textContent = toPersianNum(currentTallies);
+}
+
+/* ═══ بررسی پاسخ ═══ */
+function checkAnswer() {
+  if (locked) return;
+
+  const indicator = document.getElementById('resultIndicator');
+  const submitBtn = document.getElementById('submitBtn');
+
+  if (currentTallies === targetCount) {
+    locked = true;
+    indicator.textContent = '✓';
+    indicator.className = 'result-indicator show correct';
+    submitBtn.disabled = true;
+    playSuccessSound();
+
+    setTimeout(() => {
+      startGame();
+    }, 2500);
+  } else {
+    indicator.textContent = '✗';
+    indicator.className = 'result-indicator show wrong';
+    playErrorSound();
+
+    setTimeout(() => {
+      resetIndicator();
+    }, 2000);
+  }
+}
+
+/* ═══ شروع مجدد ═══ */
+function resetGame() {
+  startGame();
+}
+
+/* ═══ پخش صدا ═══ */
+function playClickSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 800;
+    gain.gain.value = 0.06;
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.08);
+  } catch (e) {}
+}
+
+function playSuccessSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((freq, i) => {
+      setTimeout(() => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        gain.gain.value = 0.1;
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.25);
+      }, i * 90);
+    });
+  } catch (e) {}
+}
+
+function playErrorSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(300, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.3);
+    gain.gain.value = 0.06;
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.3);
+  } catch (e) {}
+}
+
+/* ═══ تبدیل اعداد ═══ */
+function toPersianNum(num) {
+  const digits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  return String(num).replace(/\d/g, d => digits[d]);
+}
+
+/* ═══ شروع ═══ */
+window.addEventListener('load', startGame);
+</script>
+
+</body>
+</html>

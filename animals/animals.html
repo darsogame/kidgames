@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🐶 حدس حیوان از روی صدا</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+<style>
+  .option-card {
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    overflow: hidden;
+  }
+
+  .animal-emoji {
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    line-height: 1;
+    transition: transform 0.3s;
+  }
+
+  .option-card:hover:not(.disabled) .animal-emoji {
+    transform: scale(1.2) rotate(-5deg);
+  }
+
+  .animal-name {
+    font-size: clamp(0.8rem, 2vw, 1.1rem);
+    font-weight: 900;
+    color: #1e293b;
+  }
+
+  .option-card.correct .animal-name,
+  .option-card.wrong .animal-name {
+    color: #fff;
+  }
+
+  .option-card img {
+    border-radius: 12px;
+    transition: transform 0.3s;
+  }
+
+  .option-card:hover:not(.disabled) img {
+    transform: scale(1.08);
+  }
+
+  /* دکمه پخش بزرگ */
+  .play-big-btn {
+    width: clamp(80px, 14vw, 120px);
+    height: clamp(80px, 14vw, 120px);
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #1e293b;
+    font-size: clamp(2.2rem, 6vw, 3.5rem);
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 12px 30px rgba(245, 158, 11, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s ease infinite;
+  }
+
+  .play-big-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 18px 40px rgba(245, 158, 11, 0.7);
+  }
+
+  .play-big-btn.playing {
+    animation: playing 0.8s ease infinite;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 12px 30px rgba(245, 158, 11, 0.5); }
+    50% { box-shadow: 0 12px 45px rgba(245, 158, 11, 0.9); }
+  }
+
+  @keyframes playing {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🐶 حدس حیوان از روی صدا</h1>
+    <p>صدای حیوان را گوش کن و روی آن کلیک کن</p>
+  </div>
+
+  <div class="question-area" style="flex-direction: column; gap: 8px;">
+    <button class="play-big-btn" id="playBtn" onclick="playAnimalSound()">🔊</button>
+    <div style="font-size: clamp(1rem, 2.5vw, 1.4rem); font-weight: 900; color: #7c3aed;">
+      🎵 چی میشنوی؟
+    </div>
+  </div>
+
+  <div class="game-area" id="gameArea">
+    <div style="text-align: center; color: #94a3b8; font-weight: 700;">در حال بارگذاری...</div>
+  </div>
+
+  <div class="counters">
+    <div class="counter-box">
+      <div class="counter-label">درست</div>
+      <div class="counter-value correct-count" id="correctCount">۰</div>
+    </div>
+    <div class="counter-divider">|</div>
+    <div class="counter-box">
+      <div class="counter-label">غلط</div>
+      <div class="counter-value wrong-count" id="wrongCount">۰</div>
+    </div>
+    <div class="counter-divider">|</div>
+    <div class="counter-box">
+      <div class="counter-label">امتیاز</div>
+      <div class="counter-value" id="scoreValue">۰</div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="result-indicator" id="resultIndicator"></div>
+    <button class="reset-btn" onclick="resetGame()">🔄 شروع مجدد</button>
+  </div>
+</div>
+
+<script src="assets-loader.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════════════
+   🐶 بازی حدس حیوان از روی صدا
+   ══════════════════════════════════════════════════════════════ */
+
+let currentAnimal = null;
+let correctCount = 0;
+let wrongCount = 0;
+let score = 0;
+let locked = false;
+let currentAudio = null;
+
+/* ═══ شروع بازی ═══ */
+async function startGame() {
+  // اطمینان از بارگذاری assets.json
+  await loadAssets();
+
+  if (!ASSETS.animals || ASSETS.animals.length < 4) {
+    document.getElementById('gameArea').innerHTML = 
+      '<div style="text-align:center;color:#ef4444;font-weight:700;padding:20px;">⚠️ assets.json بارگذاری نشد</div>';
+    return;
+  }
+
+  locked = false;
+
+  // انتخاب تصادفی
+  currentAnimal = ASSETS.animals[Math.floor(Math.random() * ASSETS.animals.length)];
+  const others = ASSETS.animals.filter(a => a.id !== currentAnimal.id);
+  const options = shuffle([currentAnimal, ...shuffle(others).slice(0, 3)]);
+
+  renderOptions(options);
+
+  document.getElementById('resultIndicator').className = 'result-indicator';
+
+  setTimeout(() => playAnimalSound(), 500);
+}
+
+/* ═══ رسم گزینه‌ها ═══ */
+function renderOptions(options) {
+  const area = document.getElementById('gameArea');
+  area.innerHTML = '';
+
+  options.forEach(animal => {
+    const card = createAnimalCard(animal, (a, c) => selectAnimal(a, c));
+    area.appendChild(card);
+  });
+}
+
+/* ═══ انتخاب حیوان ═══ */
+function selectAnimal(animal, card) {
+  if (locked) return;
+  const indicator = document.getElementById('resultIndicator');
+
+  if (animal.id === currentAnimal.id) {
+    locked = true;
+    card.classList.add('correct');
+    correctCount++;
+    score += 10;
+    document.getElementById('correctCount').textContent = toPersianNum(correctCount);
+    document.getElementById('scoreValue').textContent = toPersianNum(score);
+    indicator.textContent = '✓';
+    indicator.className = 'result-indicator show correct';
+
+    playEffect('success');
+    speakAnimalName(animal);
+
+    setTimeout(() => startGame(), 2200);
+  } else {
+    card.classList.add('wrong');
+    wrongCount++;
+    score = Math.max(0, score - 3);
+    document.getElementById('wrongCount').textContent = toPersianNum(wrongCount);
+    document.getElementById('scoreValue').textContent = toPersianNum(score);
+    indicator.textContent = '✗';
+    indicator.className = 'result-indicator show wrong';
+
+    playEffect('error');
+
+    document.querySelectorAll('.option-card').forEach(c => {
+      if (c.dataset.animalId === currentAnimal.id) c.classList.add('correct');
+    });
+
+    locked = true;
+    setTimeout(() => startGame(), 2500);
+  }
+}
+
+/* ═══ پخش صدای حیوان ═══ */
+function playAnimalSound() {
+  if (!currentAnimal) return;
+  const btn = document.getElementById('playBtn');
+  btn.classList.add('playing');
+
+  // اگر فایل صوتی وجود دارد، آن را پخش کن
+  if (currentAnimal.sound && currentAnimal.sound.trim() !== '') {
+    if (currentAudio) currentAudio.pause();
+    currentAudio = new Audio(currentAnimal.sound);
+    currentAudio.volume = 1;
+    currentAudio.play().catch(err => {
+      console.warn('خطا در پخش صدا:', err);
+      playFallbackSound(currentAnimal.id);
+    });
+  } else {
+    // اگر فایل نبود، از Web Audio استفاده کن
+    playFallbackSound(currentAnimal.id);
+  }
+
+  setTimeout(() => btn.classList.remove('playing'), 1800);
+}
+
+/* ═══ صدای پشتیبان با Web Audio ═══ */
+function playFallbackSound(animalId) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const sounds = {
+      dog:      [200, 120, 0.15],
+      cat:      [400, 600, 0.6],
+      cow:      [150, 100, 0.7],
+      sheep:    [350, 280, 0.2],
+      chicken:  [600, 800, 0.15],
+      rooster:  [600, 900, 0.15],
+      duck:     [500, 400, 0.1],
+      horse:    [700, 500, 0.6],
+      lion:     [80, 60, 1.2],
+      elephant: [90, 130, 0.8],
+      tiger:    [150, 100, 0.9],
+      wolf:     [300, 200, 0.8],
+      fox:      [500, 400, 0.2],
+      bear:     [100, 70, 0.9],
+      monkey:   [700, 900, 0.15],
+      deer:     [400, 350, 0.2],
+      snake:    [800, 600, 0.5],
+      bee:      [700, 700, 0.8],
+      frog:     [250, 180, 0.15]
+    };
+
+    const [freqStart, freqEnd, duration] = sounds[animalId] || [500, 400, 0.3];
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(freqStart, ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(freqEnd, ctx.currentTime + duration);
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + duration);
+  } catch(e){}
+}
+
+/* ═══ تلفظ نام حیوان ═══ */
+const googleTTSLangMap = { fa: 'fa', en: 'en', ar: 'ar' };
+const speechLocaleMap = { fa: 'fa-IR', en: 'en-US', ar: 'ar-SA' };
+let ttsAudio = null;
+
+function speakWebSpeech(text, langKey, btn) {
+  if (!('speechSynthesis' in window) || !text) return;
+  try {
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = speechLocaleMap[langKey] || langKey;
+    utter.rate = 0.9;
+    const voices = window.speechSynthesis.getVoices();
+    const voice = voices.find(v => v.lang.replace('_','-').toLowerCase() === utter.lang.toLowerCase());
+    if (voice) utter.voice = voice;
+    window.speechSynthesis.speak(utter);
+  } catch(e){}
+}
+
+function speakText(text, langKey, btn) {
+  if (!text) return;
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  if (ttsAudio) { try { ttsAudio.pause(); } catch(e){} ttsAudio = null; }
+
+  const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+  if (isFirefox) return speakWebSpeech(text, langKey, btn);
+
+  const gLang = googleTTSLangMap[langKey];
+  try {
+    const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${gLang}&q=${encodeURIComponent(text)}&textlen=${text.length}`;
+    const audio = new Audio(url);
+    audio.crossOrigin = 'anonymous';
+    ttsAudio = audio;
+    audio.play().catch(() => speakWebSpeech(text, langKey, btn));
+  } catch(e) {
+    speakWebSpeech(text, langKey, btn);
+  }
+}
+
+function speakAnimalName(animal) {
+  speakText(animal.name, 'fa', null);
+}
+
+/* ═══ کمکی ═══ */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function toPersianNum(num) {
+  const digits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  return String(num).replace(/\d/g, d => digits[d]);
+}
+
+function resetGame() {
+  correctCount = 0;
+  wrongCount = 0;
+  score = 0;
+  document.getElementById('correctCount').textContent = '۰';
+  document.getElementById('wrongCount').textContent = '۰';
+  document.getElementById('scoreValue').textContent = '۰';
+  startGame();
+}
+
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+
+window.addEventListener('load', startGame);
+</script>
+
+</body>
+</html>

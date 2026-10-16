@@ -1,0 +1,251 @@
+/* ═══════════════════════════════════════════════════════ */
+/* 🎨 استایل اصلی بازی                                      */
+/* ═══════════════════════════════════════════════════════ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Vazirmatn', 'Comic Sans MS', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.bkg {
+  min-height: 100vh;
+  width: 100%;
+  background-image: url(10a25bf0-5120-11ee-93a3-493171bdd6dc.jpg);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* ═══ دکمه شروع ═══ */
+.button {
+  min-width: 180px;
+  min-height: 70px;
+  border-radius: 20px;
+  margin: 30px auto;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(135deg, #007acc, #005f99);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 0 8px 25px rgba(0, 122, 204, 0.5);
+  transition: all 0.3s;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  padding: 15px 30px;
+}
+
+.button:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 15px 40px rgba(0, 122, 204, 0.7);
+}
+
+.button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.button h1 {
+  color: #fff;
+  font-size: inherit;
+  margin: 0;
+}
+
+/* ═══ عنوان ═══ */
+h1 {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  margin: 15px 0;
+  color: #fff;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  padding: 0 15px;
+}
+
+h2 {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  margin: 10px 0;
+  color: #fff;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+p {
+  color: #fff;
+  font-size: clamp(0.8rem, 1.5vw, 1rem);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* ═══ ردیف کارت‌ها ═══ */
+.p {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+/* ═══ کارت هر بخش ═══ */
+.part {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: linear-gradient(135deg, #007acc, #005f99);
+  border-radius: 20px;
+  min-width: 120px;
+  min-height: 120px;
+  padding: 15px;
+  transition: all 0.3s;
+  cursor: pointer;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  text-decoration: none;
+  flex: 0 1 auto;
+}
+
+.part:hover {
+  background: linear-gradient(135deg, #005f99, #004d7a);
+  transform: translateY(-6px) scale(1.08);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+  border-color: #fbbf24;
+}
+
+.part:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.part > a {
+  color: #fff;
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 900;
+  text-decoration: none;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* ═══ دکمه فلش ═══ */
+#p, #x {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+  border-radius: 50%;
+  min-width: 70px;
+  min-height: 70px;
+  width: 70px;
+  height: 70px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.5);
+  text-decoration: none;
+}
+
+#p:hover, #x:hover {
+  transform: scale(1.15) rotate(10deg);
+  box-shadow: 0 15px 35px rgba(139, 92, 246, 0.8);
+}
+
+#p > a, #x > a {
+  color: #fff;
+  font-size: 1.8rem;
+  text-decoration: none;
+  font-weight: 900;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* 📱 رسپانسیو                                              */
+/* ═══════════════════════════════════════════════════════ */
+
+/* تبلت */
+@media (max-width: 1024px) {
+  .part {
+    min-width: 100px;
+    min-height: 100px;
+    padding: 12px;
+  }
+}
+
+/* موبایل */
+@media (max-width: 640px) {
+  .bkg {
+    padding: 15px;
+    background-attachment: scroll;
+  }
+
+  .button {
+    min-width: 150px;
+    min-height: 60px;
+    font-size: 1.2rem;
+    margin: 20px auto;
+    padding: 12px 24px;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    margin: 10px 0;
+  }
+
+  .p {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .part {
+    min-width: 80px;
+    min-height: 80px;
+    padding: 8px;
+    border-radius: 15px;
+    flex: 0 0 calc(33.33% - 8px);
+  }
+
+  .part > a {
+    font-size: 1.5rem;
+  }
+
+  #p, #x {
+    min-width: 55px;
+    min-height: 55px;
+    width: 55px;
+    height: 55px;
+  }
+
+  #p > a, #x > a {
+    font-size: 1.4rem;
+  }
+}
+
+/* موبایل خیلی کوچک */
+@media (max-width: 400px) {
+  .part {
+    min-width: 70px;
+    min-height: 70px;
+    flex: 0 0 calc(50% - 8px);
+  }
+
+  .part > a {
+    font-size: 1.3rem;
+  }
+}

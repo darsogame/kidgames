@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🎨 تشخیص رنگ‌ها</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: fixed;
+  }
+
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: linear-gradient(135deg, #a78bfa 0%, #38bdf8 100%);
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    padding: 8px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 950px;
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto auto;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+  }
+
+  /* ═══ هدر ═══ */
+  .header {
+    text-align: center;
+    padding: 2px 0;
+  }
+
+  .header h1 {
+    font-size: clamp(0.95rem, 2.5vw, 1.5rem);
+    color: #fff;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+    line-height: 1.2;
+  }
+
+  .header p {
+    color: #fef3c7;
+    font-size: clamp(0.65rem, 1.5vw, 0.85rem);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🎯 ناحیه سوال: کلمه + دکمه پخش صدا                      */
+  /* ═══════════════════════════════════════════════════════ */
+  .question-area {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    min-height: 75px;
+    max-height: 95px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+  }
+
+  .speak-btn-main {
+    width: clamp(50px, 8vw, 70px);
+    height: clamp(50px, 8vw, 70px);
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #a78bfa, #7c3aed);
+    color: #fff;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .speak-btn-main:hover {
+    transform: scale(1.1) rotate(-5deg);
+    box-shadow: 0 12px 28px rgba(124, 58, 237, 0.7);
+  }
+
+  .speak-btn-main:active {
+    transform: scale(0.95);
+  }
+
+  .speak-btn-main.speaking {
+    animation: speakPulse 0.8s ease infinite;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #1e293b;
+  }
+
+  @keyframes speakPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+
+  .question-text {
+    font-size: clamp(1.5rem, 5vw, 3rem);
+    font-weight: 900;
+    color: #7c3aed;
+    line-height: 1.2;
+    text-align: center;
+    flex-grow: 1;
+  }
+
+  .question-text::before {
+    content: '«';
+    color: #a78bfa;
+    margin-left: 5px;
+  }
+
+  .question-text::after {
+    content: '»';
+    color: #a78bfa;
+    margin-right: 5px;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 🎨 ناحیه رنگ‌ها                                          */
+  /* ═══════════════════════════════════════════════════════ */
+  .colors-area {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    padding: 15px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 15px;
+    min-height: 0;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    place-items: center;
+  }
+
+  /* ⭐ دایره رنگ */
+  .color-circle {
+    width: 100%;
+    height: 100%;
+    max-width: 180px;
+    max-height: 180px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 
+      0 8px 20px rgba(0, 0, 0, 0.2),
+      inset 0 -8px 20px rgba(0, 0, 0, 0.15),
+      inset 0 8px 20px rgba(255, 255, 255, 0.4);
+    position: relative;
+    border: 4px solid rgba(255, 255, 255, 0.6);
+    animation: circleIn 0.4s ease backwards;
+  }
+
+  .color-circle:nth-child(1) { animation-delay: 0.05s; }
+  .color-circle:nth-child(2) { animation-delay: 0.1s; }
+  .color-circle:nth-child(3) { animation-delay: 0.15s; }
+  .color-circle:nth-child(4) { animation-delay: 0.2s; }
+
+  @keyframes circleIn {
+    from { opacity: 0; transform: scale(0.3) rotate(-90deg); }
+    to { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  .color-circle:hover:not(.disabled) {
+    transform: scale(1.08);
+    box-shadow: 
+      0 12px 30px rgba(0, 0, 0, 0.3),
+      inset 0 -8px 20px rgba(0, 0, 0, 0.15),
+      inset 0 8px 20px rgba(255, 255, 255, 0.4);
+  }
+
+  .color-circle:active:not(.disabled) {
+    transform: scale(0.95);
+  }
+
+  .color-circle.disabled {
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  .color-circle.correct {
+    animation: correctBounce 0.6s ease;
+    border-color: #fff;
+    box-shadow: 
+      0 0 0 6px rgba(34, 197, 94, 0.6),
+      0 12px 30px rgba(34, 197, 94, 0.5);
+  }
+
+  .color-circle.correct::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(3rem, 8vw, 5rem);
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.5);
+    animation: popIn 0.5s ease;
+  }
+
+  .color-circle.wrong {
+    animation: wrongShake 0.6s ease;
+    border-color: #ef4444;
+  }
+
+  .color-circle.wrong::after {
+    content: '✗';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(3rem, 8vw, 5rem);
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.5);
+    animation: popIn 0.5s ease;
+  }
+
+  @keyframes correctBounce {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.25); }
+    60% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes wrongShake {
+    0%, 100% { transform: translateX(0) scale(1); }
+    25% { transform: translateX(-12px) scale(0.98); }
+    75% { transform: translateX(12px) scale(0.98); }
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.3); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📊 شمارنده                                              */
+  /* ═══════════════════════════════════════════════════════ */
+  .counters {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(15px, 3vw, 30px);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 14px;
+    padding: 6px 20px;
+    flex-shrink: 0;
+  }
+
+  .counter-box {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .counter-label {
+    font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+    color: #6b7280;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  .counter-value {
+    font-size: clamp(1.1rem, 2.8vw, 1.8rem);
+    font-weight: 900;
+    color: #7c3aed;
+    line-height: 1;
+  }
+
+  .counter-value.correct-count { color: #22c55e; }
+  .counter-value.wrong-count { color: #ef4444; }
+
+  .counter-divider {
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    color: #d1d5db;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* ✅ نوار پایین                                            */
+  /* ═══════════════════════════════════════════════════════ */
+  .bottom-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(8px, 1.5vw, 15px);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 14px;
+    padding: 6px 12px;
+    flex-shrink: 0;
+  }
+
+  .result-indicator {
+    width: clamp(40px, 6.5vh, 55px);
+    height: clamp(40px, 6.5vh, 55px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.3rem, 3vw, 1.8rem);
+    font-weight: 900;
+    color: #fff;
+    opacity: 0;
+    transform: scale(0.3);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    flex-shrink: 0;
+  }
+
+  .result-indicator.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .result-indicator.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.6);
+  }
+
+  .result-indicator.wrong {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+  }
+
+  .reset-btn {
+    height: clamp(40px, 6.5vh, 55px);
+    padding: 0 clamp(12px, 2.5vw, 25px);
+    border-radius: 30px;
+    border: 2px solid #fff;
+    background: linear-gradient(135deg, #94a3b8, #64748b);
+    color: #fff;
+    font-size: clamp(0.75rem, 1.6vw, 1rem);
+    font-weight: 900;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    white-space: nowrap;
+    box-shadow: 0 6px 15px rgba(100, 116, 139, 0.5);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .reset-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(100, 116, 139, 0.7);
+  }
+
+  .reset-btn:active { transform: scale(0.97); }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* 📱 ریسپانسیو                                              */
+  /* ═══════════════════════════════════════════════════════ */
+  @media (max-width: 640px) {
+    body { padding: 5px; }
+    .container { padding: 8px; gap: 6px; border-radius: 16px; }
+
+    .question-area {
+      padding: 8px 10px;
+      min-height: 65px;
+      gap: 10px;
+    }
+
+    .colors-area {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    padding: 15px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 15px;
+    min-height: 0;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    /* ⭐ هر سلول وسط‌چین */
+    place-items: center;
+    place-content: center;
+    /* ⭐ محدود کردن ابعاد شبکه به‌اندازه‌ی کوچک‌ترین بُعد */
+    grid-auto-rows: 1fr;
+        }
+
+        /* ⭐ دایره رنگ — همیشه کامل و وسط */
+    .color-circle {
+    width: clamp(70px, 18vh, 150px);
+    height: clamp(70px, 18vh, 150px);
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 
+    0 8px 20px rgba(0, 0, 0, 0.2),
+    inset 0 -8px 20px rgba(0, 0, 0, 0.15),
+    inset 0 8px 20px rgba(255, 255, 255, 0.4);
+    position: relative;
+    border: 4px solid rgba(255, 255, 255, 0.6);
+    animation: circleIn 0.4s ease backwards;
+    flex-shrink: 0;
+    align-self: center;
+    justify-self: center;
+    }
+
+    .counters {
+      padding: 5px 15px;
+      gap: 15px;
+    }
+
+    .bottom-bar { padding: 5px 10px; }
+    .reset-btn { height: 42px; padding: 0 15px; font-size: 0.8rem; }
+    .result-indicator { width: 42px; height: 42px; font-size: 1.3rem; }
+  }
+
+  @media (max-width: 380px) {
+    .container { padding: 6px; gap: 5px; }
+    .header h1 { font-size: 0.9rem; }
+    .header p { font-size: 0.6rem; }
+    .question-area { min-height: 55px; padding: 6px 8px; gap: 8px; }
+    .colors-area { padding: 8px; gap: 8px; }
+    .counters { padding: 4px 12px; gap: 10px; }
+    .reset-btn { height: 38px; font-size: 0.7rem; padding: 0 12px; }
+    .result-indicator { width: 38px; height: 38px; font-size: 1.1rem; }
+  }
+
+  /* ⭐ موبایل افقی */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .header { padding: 0; }
+    .header h1 { font-size: 0.9rem; }
+    .header p { font-size: 0.6rem; }
+
+    .question-area { min-height: 55px; padding: 5px 10px; }
+
+    .colors-area {
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: 1fr;
+      gap: 8px;
+    }
+
+    .bottom-bar { padding: 4px 8px; }
+    .reset-btn { height: 36px; padding: 0 12px; font-size: 0.75rem; }
+    .result-indicator { width: 36px; height: 36px; font-size: 1rem; }
+  }
+  @media (min-width: 1024px) {
+    .colors-area{
+        display: flex;
+        flex-direction:row;
+    }
+    .color-circle{
+        margin-right: 3%;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🎨 تشخیص رنگ‌ها</h1>
+    <p>گوش کن و رنگ درست را انتخاب کن</p>
+  </div>
+
+  <!-- ═══ ناحیه سوال ═══ -->
+  <div class="question-area">
+    <button class="speak-btn-main" id="speakBtn" onclick="speakQuestion()">
+      🔊
+    </button>
+    <div class="question-text" id="questionText">قرمز</div>
+  </div>
+
+  <!-- ═══ ناحیه رنگ‌ها ═══ -->
+  <div class="colors-area" id="colorsArea"></div>
+
+  <!-- ═══ شمارنده ═══ -->
+  <div class="counters">
+    <div class="counter-box">
+      <div class="counter-label">درست</div>
+      <div class="counter-value correct-count" id="correctCount">۰</div>
+    </div>
+    <div class="counter-divider">|</div>
+    <div class="counter-box">
+      <div class="counter-label">غلط</div>
+      <div class="counter-value wrong-count" id="wrongCount">۰</div>
+    </div>
+    <div class="counter-divider">|</div>
+    <div class="counter-box">
+      <div class="counter-label">امتیاز</div>
+      <div class="counter-value" id="scoreValue">۰</div>
+    </div>
+  </div>
+
+  <!-- ═══ نوار پایین ═══ -->
+  <div class="bottom-bar">
+    <div class="result-indicator" id="resultIndicator"></div>
+    <button class="reset-btn" onclick="resetGame()">🔄 شروع مجدد</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   🎨 بازی تشخیص رنگ‌ها با TTS فارسی
+   ══════════════════════════════════════════════════════════════ */
+
+/* لیست رنگ‌ها با کد HEX و نام فارسی */
+const allColors = [
+  { name: 'قرمز',      tts: 'قرمز',        hex: '#ef4444' },
+  { name: 'آبی',       tts: 'آبی',         hex: '#3b82f6' },
+  { name: 'زرد',       tts: 'زرد',         hex: '#fbbf24' },
+  { name: 'سبز',       tts: 'سبز',         hex: '#22c55e' },
+  { name: 'نارنجی',    tts: 'نارنجی',      hex: '#f97316' },
+  { name: 'بنفش',      tts: 'بنفش',        hex: '#a855f7' },
+  { name: 'صورتی',     tts: 'صورتی',       hex: '#ec4899' },
+  { name: 'قهوه‌ای',   tts: 'قهوه ای',    hex: '#92400e' },  // ⭐ فاصله به جای نیم‌فاصله
+  { name: 'مشکی',      tts: 'مشکی',        hex: '#1f2937' },
+  { name: 'سفید',      tts: 'سفید',        hex: '#f8fafc' },// این معمولاً درست تلفظ می‌شود
+  { name: 'فیروزه‌ای', tts: 'فیروزه ای',  hex: '#06b6d4' }   // ⭐ فاصله به جای نیم‌فاصله
+];
+
+let currentColor = null;
+let currentOptions = [];
+let correctCount = 0;
+let wrongCount = 0;
+let score = 0;
+let locked = false;
+
+/* ═══ شروع بازی ═══ */
+function startGame() {
+  locked = false;
+
+  // انتخاب رنگ تصادفی
+  currentColor = allColors[Math.floor(Math.random() * allColors.length)];
+
+  // انتخاب ۳ رنگ دیگر برای گزینه‌ها
+  const otherColors = allColors.filter(c => c.name !== currentColor.name);
+  const shuffledOthers = shuffle([...otherColors]).slice(0, 3);
+
+  // ترکیب و شافل همه
+  currentOptions = shuffle([currentColor, ...shuffledOthers]);
+
+  // نمایش کلمه
+  document.getElementById('questionText').textContent = currentColor.name;
+
+  // رسم دایره‌ها
+  renderColors();
+
+  // پخش خودکار پس از تاخیر کوچک
+  setTimeout(() => {
+    speakQuestion();
+  }, 500);
+
+  // ریست نشانگر
+  const indicator = document.getElementById('resultIndicator');
+  indicator.className = 'result-indicator';
+  indicator.textContent = '';
+}
+
+/* ═══ رسم دایره‌های رنگ ═══ */
+function renderColors() {
+  const container = document.getElementById('colorsArea');
+  container.innerHTML = '';
+
+  currentOptions.forEach((color, index) => {
+    const circle = document.createElement('div');
+    circle.className = 'color-circle';
+    circle.style.background = color.hex;
+    circle.dataset.colorName = color.name;
+    circle.dataset.index = index;
+
+    // برای رنگ سفید، حاشیه تیره‌تر
+    if (color.name === 'سفید') {
+      circle.style.border = '4px solid #cbd5e1';
+    }
+
+    circle.addEventListener('click', () => selectColor(color, circle));
+    container.appendChild(circle);
+  });
+}
+
+/* ═══ انتخاب رنگ ═══ */
+function selectColor(color, circleElement) {
+  if (locked) return;
+
+  const indicator = document.getElementById('resultIndicator');
+
+  if (color.name === currentColor.name) {
+    // پاسخ درست
+    locked = true;
+    circleElement.classList.add('correct');
+    correctCount++;
+    score += 10;
+
+    document.getElementById('correctCount').textContent = toPersianNum(correctCount);
+    document.getElementById('scoreValue').textContent = toPersianNum(score);
+
+    indicator.textContent = '✓';
+    indicator.className = 'result-indicator show correct';
+
+    playSuccessSound();
+
+    // بازی جدید بعد از ۲ ثانیه
+    setTimeout(() => {
+      startGame();
+    }, 2000);
+
+  } else {
+    // پاسخ غلط
+    circleElement.classList.add('wrong');
+    wrongCount++;
+    score = Math.max(0, score - 3);
+
+    document.getElementById('wrongCount').textContent = toPersianNum(wrongCount);
+    document.getElementById('scoreValue').textContent = toPersianNum(score);
+
+    indicator.textContent = '✗';
+    indicator.className = 'result-indicator show wrong';
+
+    playErrorSound();
+
+    // برجسته کردن رنگ درست
+    const allCircles = document.querySelectorAll('.color-circle');
+    allCircles.forEach(c => {
+      if (c.dataset.colorName === currentColor.name) {
+        c.classList.add('correct');
+      }
+    });
+    
+    locked = true;
+
+    setTimeout(() => {
+      startGame();
+    }, 2000);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   🔊 سیستم TTS فارسی
+   ══════════════════════════════════════════════════════════════ */
+
+let currentAudio = null;
+let speechRate = 0.9;
+
+/* ═══ نگاشت زبان به Google TTS ═══ */
+const googleTTSLangMap = {
+  fa: 'fa', en: 'en', ar: 'ar', ru: 'ru', fr: 'fr',
+  es: 'es', de: 'de', ja: 'ja', zh: 'zh-CN'
+};
+
+const speechLocaleMap = {
+  fa: 'fa-IR', en: 'en-US', ar: 'ar-SA', ru: 'ru-RU',
+  fr: 'fr-FR', es: 'es-ES', de: 'de-DE', ja: 'ja-JP', zh: 'zh-CN'
+};
+
+function stopSpeaking() {
+  if (currentAudio) {
+    try { currentAudio.pause(); currentAudio.currentTime = 0; } catch(e){}
+    currentAudio = null;
+  }
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+}
+
+/* ═══ تلفظ با Google TTS ═══ */
+async function speakGoogle(text, langKey, btnElement) {
+  if (!text) return false;
+  const gLang = googleTTSLangMap[langKey];
+  if (!gLang) return false;
+
+  try {
+    const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${gLang}&q=${encodeURIComponent(text)}&textlen=${text.length}`;
+    const audio = new Audio(url);
+    audio.crossOrigin = 'anonymous';
+    currentAudio = audio;
+
+    if (btnElement) {
+      btnElement.classList.add('speaking');
+      audio.onended = () => {
+        btnElement.classList.remove('speaking');
+        currentAudio = null;
+      };
+      audio.onerror = () => {
+        btnElement.classList.remove('speaking');
+        currentAudio = null;
+      };
+    }
+
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(err => {
+        if (btnElement) btnElement.classList.remove('speaking');
+        speakWebSpeech(text, langKey, btnElement);
+      });
+    }
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+/* ═══ تلفظ با Web Speech (fallback) ═══ */
+function speakWebSpeech(text, langKey, btnElement, customRate) {
+  if (!('speechSynthesis' in window) || !text) return;
+  try {
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    const locale = speechLocaleMap[langKey] || langKey;
+    utter.lang = locale;
+    utter.rate = customRate !== undefined ? customRate : speechRate;
+    utter.pitch = 1.1;
+    utter.volume = 1;
+
+    const voices = window.speechSynthesis.getVoices();
+    let voice = voices.find(v => v.lang.replace('_','-').toLowerCase() === locale.toLowerCase());
+    if (!voice) voice = voices.find(v => v.lang.toLowerCase().startsWith(langKey + '-'));
+    if (voice) utter.voice = voice;
+
+    if (btnElement) {
+      btnElement.classList.add('speaking');
+      utter.onend = () => btnElement.classList.remove('speaking');
+      utter.onerror = () => btnElement.classList.remove('speaking');
+    }
+    window.speechSynthesis.speak(utter);
+  } catch (err) {
+    console.warn('Web Speech error:', err);
+  }
+}
+
+/* ═══ تابع اصلی تلفظ ═══ */
+function speakText(text, langKey, btnElement) {
+  if (!text) return;
+  stopSpeaking();
+  const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+  if (isFirefox) {
+    speakWebSpeech(text, langKey, btnElement);
+    return;
+  }
+  speakGoogle(text, langKey, btnElement);
+}
+
+/* ═══ تلفظ کلمه رنگ ═══ */
+function speakQuestion() {
+  if (!currentColor) return;
+  const btn = document.getElementById('speakBtn');
+  // ⭐ استفاده از فیلد tts به جای name
+  speakText(currentColor.tts || currentColor.name, 'fa', btn);
+}
+
+/* ═══ پخش صداهای بازخورد ═══ */
+function playSuccessSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((freq, i) => {
+      setTimeout(() => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        gain.gain.value = 0.1;
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.25);
+      }, i * 90);
+    });
+  } catch (e) {}
+}
+
+function playErrorSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(300, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.3);
+    gain.gain.value = 0.06;
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.3);
+  } catch (e) {}
+}
+
+/* ═══ شروع مجدد ═══ */
+function resetGame() {
+  correctCount = 0;
+  wrongCount = 0;
+  score = 0;
+  document.getElementById('correctCount').textContent = '۰';
+  document.getElementById('wrongCount').textContent = '۰';
+  document.getElementById('scoreValue').textContent = '۰';
+  startGame();
+}
+
+/* ═══ کمکی‌ها ═══ */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function toPersianNum(num) {
+  const digits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  return String(num).replace(/\d/g, d => digits[d]);
+}
+
+/* ═══ بارگذاری صداها ═══ */
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+
+/* ═══ شروع ═══ */
+window.addEventListener('load', startGame);
+</script>
+
+</body>
+</html>

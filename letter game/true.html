@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            background-color:greenyellow;
+            display: flex;
+        }
+        .d1{
+            display: flex;
+            flex-direction: row
+        }
+        h1{
+            margin-left: 20%;
+            margin-top: 20%;
+            color: rgb(255, 255, 255);
+            font: 16vh sans-serif;
+
+        }
+        img{
+            height: 50vh;
+            width: 48vw;
+        }
+        div{
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        button{margin: 20px;}
+        .btn-15 {
+    
+  border: none;
+  z-index: 1;
+  width: 130px;
+  height: 40px;
+  color: #fff;
+  border-radius: 5px;
+  padding: 10px 25px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 500;
+  font-size: 90%;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+   box-shadow:inset 2px 2px 2px 0px rgba(255,255,255,.5),
+   7px 7px 20px 0px rgba(0,0,0,.1),
+   4px 4px 5px 0px rgba(0,0,0,.1);
+  outline: none;
+  background-color: #004d2e;
+}
+.btn-15:after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 100%;
+  top: 0;
+  right: 0;
+  z-index: -1;
+  background-color: #00b38f;
+  border-radius: 5px;
+   box-shadow:inset 2px 2px 2px 0px rgba(255,255,255,.5),
+   7px 7px 20px 0px rgba(0,0,0,.1),
+   4px 4px 5px 0px rgba(0,0,0,.1);
+  transition: all 0.3s ease;
+}
+.btn-15:hover {
+  color: #fff;
+}
+.btn-15:hover:after {
+  left: 0;
+  width: 100%;
+}
+.btn-15:active {
+  top: 2px;
+}
+    </style>
+</head>
+<body>
+    
+   <div class="d1">
+    <img src="true.gif" alt="آفرین">
+    <div>
+     <h1>آفرین</h1>  
+      <button class="btn-15" onclick="on()">بازگشت به بازی</button>
+    </div>
+    
+    <audio id="music" autoplay>
+        <source src="music.mp3" type="audio/mpeg">
+      </audio>
+      
+   </div>
+   <script>
+    function on() {
+        var musics=document.getElementById('music')
+        musics.pause()
+        window.open("index.html")
+        
+        
+    }
+</script>
+</body>
+</html>

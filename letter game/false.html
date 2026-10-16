@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نادرست — بازی کودکان</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #dc2626, #991b1b);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow: hidden;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    max-width: 1200px;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .gif-area {
+    flex: 1;
+    min-width: 280px;
+    max-width: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .gif-area img {
+    width: 100%;
+    max-width: 450px;
+    height: auto;
+    border-radius: 25px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    animation: shake 0.5s ease infinite;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px) rotate(-2deg); }
+    75% { transform: translateX(8px) rotate(2deg); }
+  }
+
+  .content {
+    flex: 1;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    text-align: center;
+  }
+
+  .content h1 {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+    animation: pulse 1.5s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .content p {
+    color: #fef3c7;
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    line-height: 1.8;
+  }
+
+  .btn-14 {
+    padding: 20px 45px;
+    font-family: inherit;
+    font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+    font-weight: 900;
+    color: #1e293b;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 12px 30px rgba(251, 191, 36, 0.6);
+    border: 3px solid rgba(255, 255, 255, 0.5);
+  }
+
+  .btn-14:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 18px 40px rgba(251, 191, 36, 0.8);
+  }
+
+  .btn-14:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  @media (max-width: 640px) {
+    .container {
+      flex-direction: column;
+      gap: 25px;
+    }
+    .gif-area img {
+      max-width: 280px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="gif-area">
+    <img src="false.gif" alt="نادرست">
+  </div>
+  <div class="content">
+    <h1>😢 بیشتر دقت کن</h1>
+    <p>اشتباه شد! دوباره تلاش کن</p>
+    <button class="btn-14" onclick="goBack()">🔙 بازگشت به بازی</button>
+  </div>
+</div>
+
+<audio autoplay>
+  <source src="musicf.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  function goBack() {
+    window.location.href = 'index.html';
+  }
+
+  // کلیک روی کل صفحه هم کار کند
+  document.body.addEventListener('click', (e) => {
+    if (e.target.tagName !== 'BUTTON') {
+      // هیچ‌کاری نکن
+    }
+  });
+</script>
+
+</body>
+</html>

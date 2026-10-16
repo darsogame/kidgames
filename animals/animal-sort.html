@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🏠🌲 دسته‌بندی حیوانات</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .baskets-area {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    padding: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    min-height: 0;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+  }
+
+  .basket {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 4px dashed #22c55e;
+    border-radius: 20px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.3s;
+    min-height: 0;
+  }
+
+  .basket.wild {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border-color: #f59e0b;
+  }
+
+  .basket.drag-over {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(34, 197, 94, 0.5);
+    border-style: solid;
+  }
+
+  .basket.wild.drag-over {
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.5);
+  }
+
+  .basket-title {
+    font-size: clamp(0.85rem, 2vw, 1.1rem);
+    font-weight: 900;
+    color: #166534;
+    margin-bottom: 8px;
+  }
+
+  .basket.wild .basket-title {
+    color: #b45309;
+  }
+
+  .basket-items {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    min-height: 40px;
+    padding: 5px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  .placed-animal {
+    width: clamp(45px, 10vh, 65px);
+    height: clamp(45px, 10vh, 65px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    animation: popIn 0.4s ease;
+  }
+
+  .placed-animal img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 10px;
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.3); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .animals-area {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    padding: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 0;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  .draggable-animal {
+    width: clamp(60px, 12vh, 90px);
+    height: clamp(60px, 12vh, 90px);
+    background: #fff;
+    border: 3px solid #a78bfa;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+    cursor: grab;
+    transition: all 0.3s;
+    box-shadow: 0 6px 15px rgba(167, 139, 250, 0.3);
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .draggable-animal img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    pointer-events: none;
+  }
+
+  .draggable-animal:hover {
+    transform: scale(1.1) translateY(-5px);
+    box-shadow: 0 12px 25px rgba(167, 139, 250, 0.5);
+    border-color: #7c3aed;
+  }
+
+  .draggable-animal.dragging {
+    opacity: 0.4;
+    transform: scale(0.9);
+  }
+
+  .success-banner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+    padding: 20px 40px;
+    border-radius: 20px;
+    font-size: clamp(1.3rem, 4vw, 2rem);
+    font-weight: 900;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+  }
+
+  .success-banner.show {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  @media (max-width: 640px) {
+    .baskets-area { padding: 8px; gap: 8px; }
+    .basket { padding: 6px; }
+    .basket-title { font-size: 0.75rem; margin-bottom: 4px; }
+    .animals-area { padding: 8px; gap: 6px; }
+    .draggable-animal { border-width: 2px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🏠🌲 دسته‌بندی حیوانات</h1>
+    <p>حیوان‌ها را به خانه‌ی درستشان بکش</p>
+  </div>
+
+  <div class="question-area" style="min-height: 50px; max-height: 65px;">
+    <div style="font-size: clamp(0.9rem, 2vw, 1.2rem); font-weight: 900; color: #7c3aed;">
+      🐾 حیوان‌ها را بکش و به سبد درست بینداز
+    </div>
+  </div>
+
+  <div class="baskets-area">
+    <div class="basket" id="domesticBasket" data-type="domestic">
+      <div class="basket-title">🏠 اهلی</div>
+      <div class="basket-items" id="domesticItems"></div>
+    </div>
+    <div class="basket wild" id="wildBasket" data-type="wild">
+      <div class="basket-title">🌲 وحشی</div>
+      <div class="basket-items" id="wildItems"></div>
+    </div>
+  </div>
+
+  <div class="animals-area" id="animalsArea">
+    <div style="text-align: center; color: #94a3b8; font-weight: 700;">در حال بارگذاری...</div>
+  </div>
+
+  <div class="counters">
+    <div class="counter-box">
+      <div class="counter-label">اهلی</div>
+      <div class="counter-value correct-count" id="domesticCount">۰</div>
+    </div>
+    <div class="counter-divider">|</div>
+    <div class="counter-box">
+      <div class="counter-label">وحشی</div>
+      <div class="counter-value" id="wildCount" style="color: #f59e0b;">۰</div>
+    </div>
+    <div class="counter-divider">|</div>
+    <div class="counter-box">
+      <div class="counter-label">امتیاز</div>
+      <div class="counter-value" id="scoreValue">۰</div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="result-indicator" id="resultIndicator"></div>
+    <button class="reset-btn" onclick="resetGame()">🔄 شروع مجدد</button>
+  </div>
+</div>
+
+<div class="success-banner" id="successBanner">🎉 آفرین!</div>
+
+<script src="assets-loader.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════════════
+   🏠🌲 دسته‌بندی حیوانات اهلی و وحشی
+   ══════════════════════════════════════════════════════════════ */
+
+let domesticCount = 0;
+let wildCount = 0;
+let score = 0;
+let totalAnimals = 0;
+let placedCount = 0;
+let draggedElement = null;
+
+/* ═══ شروع بازی ═══ */
+async function startGame() {
+  await loadAssets();
+
+  if (!ASSETS.animals || ASSETS.animals.length < 4) {
+    document.getElementById('animalsArea').innerHTML = 
+      '<div style="text-align:center;color:#ef4444;font-weight:700;padding:20px;">⚠️ assets.json بارگذاری نشد</div>';
+    return;
+  }
+
+  // انتخاب ۶ حیوان تصادفی (۳ اهلی + ۳ وحشی یا تصادفی)
+  const shuffled = shuffle([...ASSETS.animals]);
+  const selected = shuffled.slice(0, 6);
+
+  totalAnimals = selected.length;
+  placedCount = 0;
+  domesticCount = 0;
+  wildCount = 0;
+  score = 0;
+
+  updateCounters();
+  document.getElementById('domesticItems').innerHTML = '';
+  document.getElementById('wildItems').innerHTML = '';
+
+  renderAnimals(selected);
+}
+
+/* ═══ رسم حیوانات ═══ */
+function renderAnimals(animals) {
+  const area = document.getElementById('animalsArea');
+  area.innerHTML = '';
+
+  animals.forEach(animal => {
+    const el = document.createElement('div');
+    el.className = 'draggable-animal';
+    el.draggable = true;
+    el.dataset.animalId = animal.id;
+    el.dataset.animalType = animal.type;
+
+    // اگر تصویر داشت
+    if (animal.image && animal.image.trim() !== '') {
+      el.innerHTML = `<img src="${animal.image}" alt="${animal.name}" 
+                          onerror="this.style.display='none'; this.parentElement.textContent='${animal.emoji}'; this.parentElement.style.fontSize='2rem';">`;
+    } else {
+      el.textContent = animal.emoji;
+    }
+
+    // رویدادهای Drag & Drop
+    el.addEventListener('dragstart', handleDragStart);
+    el.addEventListener('dragend', handleDragEnd);
+    el.addEventListener('touchstart', handleTouchStart, { passive: false });
+    el.addEventListener('touchmove', handleTouchMove, { passive: false });
+    el.addEventListener('touchend', handleTouchEnd);
+
+    area.appendChild(el);
+  });
+}
+
+/* ═══ Drag & Drop ماوس ═══ */
+function handleDragStart(e) {
+  draggedElement = this;
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', this.dataset.animalId);
+}
+
+function handleDragEnd(e) {
+  this.classList.remove('dragging');
+  draggedElement = null;
+  document.querySelectorAll('.basket').forEach(b => b.classList.remove('drag-over'));
+}
+
+/* ═══ Drag & Drop لمس ═══ */
+let touchStartX = 0;
+let touchStartY = 0;
+
+function handleTouchStart(e) {
+  const touch = e.touches[0];
+  touchStartX = touch.clientX;
+  touchStartY = touch.clientY;
+  draggedElement = this;
+}
+
+function handleTouchMove(e) {
+  if (!draggedElement) return;
+  e.preventDefault();
+  const touch = e.touches[0];
+  const moveDistance = Math.hypot(touch.clientX - touchStartX, touch.clientY - touchStartY);
+
+  if (moveDistance > 10) {
+    draggedElement.classList.add('dragging');
+
+    const baskets = document.querySelectorAll('.basket');
+    baskets.forEach(b => b.classList.remove('drag-over'));
+
+    baskets.forEach(b => {
+      const rect = b.getBoundingClientRect();
+      if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+          touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+        b.classList.add('drag-over');
+      }
+    });
+  }
+}
+
+function handleTouchEnd(e) {
+  if (!draggedElement) return;
+  e.preventDefault();
+
+  const touch = e.changedTouches[0];
+  const baskets = document.querySelectorAll('.basket');
+
+  let droppedOnBasket = null;
+  baskets.forEach(b => {
+    const rect = b.getBoundingClientRect();
+    if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+        touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+      droppedOnBasket = b;
+    }
+    b.classList.remove('drag-over');
+  });
+
+  if (droppedOnBasket) {
+    const animalType = draggedElement.dataset.animalType;
+    const basketType = droppedOnBasket.dataset.type;
+    handleDrop(animalType, basketType, droppedOnBasket);
+  }
+
+  draggedElement.classList.remove('dragging');
+  draggedElement = null;
+}
+
+/* ═══ رویدادهای سطل‌ها ═══ */
+document.querySelectorAll('.basket').forEach(basket => {
+  basket.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    basket.classList.add('drag-over');
+  });
+
+  basket.addEventListener('dragleave', (e) => {
+    if (!basket.contains(e.relatedTarget)) {
+      basket.classList.remove('drag-over');
+    }
+  });
+
+  basket.addEventListener('drop', (e) => {
+    e.preventDefault();
+    basket.classList.remove('drag-over');
+    if (!draggedElement) return;
+
+    const animalType = draggedElement.dataset.animalType;
+    const basketType = basket.dataset.type;
+    handleDrop(animalType, basketType, basket);
+  });
+});
+
+/* ═══ پردازش Drop ═══ */
+function handleDrop(animalType, basketType, basketElement) {
+  if (!draggedElement) return;
+
+  const indicator = document.getElementById('resultIndicator');
+
+  if (animalType === basketType) {
+    // درست
+    const itemsContainer = basketType === 'domestic' 
+      ? document.getElementById('domesticItems')
+      : document.getElementById('wildItems');
+
+    // کپی عنصر
+    const clone = draggedElement.cloneNode(true);
+    clone.classList.add('placed-animal');
+    clone.classList.remove('dragging');
+    clone.draggable = false;
+    itemsContainer.appendChild(clone);
+
+    // حذف عنصر اصلی
+    draggedElement.remove();
+    draggedElement = null;
+
+    placedCount++;
+    if (basketType === 'domestic') domesticCount++;
+    else wildCount++;
+    score += 10;
+
+    updateCounters();
+
+    indicator.textContent = '✓';
+    indicator.className = 'result-indicator show correct';
+    playEffect('success');
+
+    // بررسی پایان بازی
+    if (placedCount >= totalAnimals) {
+      setTimeout(showSuccess, 800);
+    }
+  } else {
+    // غلط
+    score = Math.max(0, score - 3);
+    updateCounters();
+
+    indicator.textContent = '✗';
+    indicator.className = 'result-indicator show wrong';
+    playEffect('error');
+
+    setTimeout(() => {
+      indicator.className = 'result-indicator';
+    }, 1500);
+  }
+}
+
+/* ═══ نمایش پیام موفقیت ═══ */
+function showSuccess() {
+  const banner = document.getElementById('successBanner');
+  banner.textContent = `🎉 آفرین! امتیاز: ${toPersianNum(score)}`;
+  banner.classList.add('show');
+
+  setTimeout(() => {
+    banner.classList.remove('show');
+    startGame();
+  }, 2500);
+}
+
+/* ═══ به‌روزرسانی شمارنده ═══ */
+function updateCounters() {
+  document.getElementById('domesticCount').textContent = toPersianNum(domesticCount);
+  document.getElementById('wildCount').textContent = toPersianNum(wildCount);
+  document.getElementById('scoreValue').textContent = toPersianNum(score);
+}
+
+/* ═══ شروع مجدد ═══ */
+function resetGame() {
+  startGame();
+}
+
+/* ═══ کمکی ═══ */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function toPersianNum(num) {
+  const digits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  return String(num).replace(/\d/g, d => digits[d]);
+}
+
+window.addEventListener('load', startGame);
+</script>
+
+</body>
+</html>
