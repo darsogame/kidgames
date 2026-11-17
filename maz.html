@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🧩 ماز جادویی</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html, body{
+    height:100%;
+    overflow:hidden;
+}
+
+body{
+    font-family:"Vazirmatn",sans-serif;
+    min-height:100vh;
+    min-height:100dvh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:6px;
+
+    background:
+        radial-gradient(circle at 10% 10%, rgba(147, 51, 234, .35), transparent 40%),
+        radial-gradient(circle at 90% 15%, rgba(59, 130, 246, .35), transparent 40%),
+        radial-gradient(circle at 50% 95%, rgba(236, 72, 153, .30), transparent 45%),
+        linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+
+    color:#fff;
+    position:relative;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:
+        radial-gradient(2px 2px at 20% 30%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 60% 70%, #fff, transparent),
+        radial-gradient(1px 1px at 80% 20%, #fff, transparent),
+        radial-gradient(2px 2px at 30% 80%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 70% 40%, #fff, transparent),
+        radial-gradient(1px 1px at 90% 90%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 10% 60%, #fff, transparent),
+        radial-gradient(1px 1px at 45% 15%, #fff, transparent);
+    background-size:200% 200%;
+    opacity:.5;
+    pointer-events:none;
+    animation: twinkle 6s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle{
+    0%{ opacity:.3; }
+    100%{ opacity:.7; }
+}
+
+/* ============ قاب اصلی ============ */
+.game-container{
+    width:min(1000px, 98vw);
+    height:min(98vh, 950px);
+    height:min(98dvh, 950px);
+
+    padding:10px;
+
+    display:flex;
+    flex-direction:column;
+
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:22px;
+
+    background:rgba(20, 20, 40, .55);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+
+    box-shadow:
+        0 30px 80px rgba(0,0,0,.5),
+        inset 0 1px 0 rgba(255,255,255,.15);
+
+    position:relative;
+    z-index:1;
+    overflow:hidden;
+}
+
+/* ============ هدر ============ */
+.header{
+    position:relative;
+    flex-shrink:0;
+
+    padding:6px 12px;
+    margin-bottom:6px;
+
+    text-align:center;
+
+    border-radius:14px;
+
+    background:
+        linear-gradient(135deg, rgba(139, 92, 246, .25), rgba(236, 72, 153, .25));
+    border:1px solid rgba(255,255,255,.15);
+}
+
+.header h1{
+    font-size:clamp(15px, 2.4vw, 22px);
+    font-weight:900;
+    background:linear-gradient(135deg, #f0abfc, #818cf8, #67e8f9);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    line-height:1.2;
+}
+
+.home-btn{
+    position:absolute;
+    left:8px;
+    top:50%;
+    transform:translateY(-50%);
+
+    border:none;
+    border-radius:10px;
+
+    padding:5px 9px;
+
+    background:rgba(255,255,255,.1);
+    color:#fff;
+
+    font-family:inherit;
+    font-size:clamp(9px, 1.2vw, 11px);
+    font-weight:700;
+
+    cursor:pointer;
+
+    border:1px solid rgba(255,255,255,.15);
+    transition:all .2s;
+}
+
+.home-btn:hover{
+    background:rgba(255,255,255,.2);
+}
+
+/* ============ نوار وضعیت ============ */
+.stats-bar{
+    flex-shrink:0;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+
+    gap:5px;
+
+    margin-bottom:6px;
+}
+
+.stat{
+    display:flex;
+    align-items:center;
+    gap:4px;
+
+    padding:4px 9px;
+
+    border-radius:11px;
+
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.15);
+
+    font-size:clamp(10px, 1.2vw, 12px);
+    font-weight:700;
+
+    transition:all .3s;
+}
+
+.stat.highlight{
+    background:linear-gradient(135deg, rgba(251, 191, 36, .3), rgba(245, 158, 11, .3));
+    border-color:rgba(251, 191, 36, .5);
+    animation: glow 1s ease-in-out;
+}
+
+@keyframes glow{
+    0%, 100%{ box-shadow:inset 0 1px 0 rgba(255,255,255,.1); }
+    50%{ box-shadow:inset 0 1px 0 rgba(255,255,255,.1), 0 0 20px rgba(251,191,36,.6); }
+}
+
+.stat .icon{ font-size:1.1em; }
+.stat .value{ color:#fde68a; min-width:16px; text-align:center; }
+
+/* ============ ناحیه بازی ============ */
+.game-area{
+    flex:1;
+    min-height:0;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+    gap:6px;
+
+    padding:2px;
+
+    overflow:hidden;
+}
+
+/* ============ نگهدارنده ماز ============ */
+.maze-wrapper{
+    flex:1;
+    min-height:0;
+    min-width:0;
+
+    width:100%;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    direction:ltr;
+
+    position:relative;
+}
+
+.maze{
+    display:grid;
+    gap:1px;
+
+    padding:6px;
+
+    background:linear-gradient(135deg, rgba(139, 92, 246, .3), rgba(59, 130, 246, .3));
+    border-radius:14px;
+
+    border:1px solid rgba(255,255,255,.15);
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.4),
+        inset 0 0 30px rgba(139, 92, 246, .2);
+
+    direction:ltr;
+
+    position:relative;
+
+    transition:transform .3s;
+}
+
+.cell{
+    position:relative;
+
+    min-width:0;
+    min-height:0;
+
+    border-radius:3px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:clamp(8px, 1.4vw, 16px);
+
+    user-select:none;
+
+    transition:all .15s;
+}
+
+.wall{
+    background:
+        linear-gradient(135deg, #3730a3, #312e81);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.1),
+        inset 0 -1px 0 rgba(0,0,0,.3);
+}
+
+.path{
+    background:rgba(15, 23, 42, .4);
+    box-shadow:inset 0 0 4px rgba(0,0,0,.3);
+}
+
+.start{
+    background:rgba(34, 197, 94, .3);
+    box-shadow:
+        inset 0 0 8px rgba(34, 197, 94, .6),
+        0 0 10px rgba(34, 197, 94, .4);
+}
+
+.goal{
+    background:rgba(251, 191, 36, .35);
+    box-shadow:
+        inset 0 0 8px rgba(251, 191, 36, .7),
+        0 0 15px rgba(251, 191, 36, .5);
+    animation:goalPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes goalPulse{
+    0%, 100%{ transform:scale(1); }
+    50%{ transform:scale(1.1); }
+}
+
+.gem{
+    background:rgba(236, 72, 153, .25);
+    box-shadow:
+        inset 0 0 8px rgba(236, 72, 153, .6),
+        0 0 10px rgba(236, 72, 153, .5);
+    animation:gemPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes gemPulse{
+    0%, 100%{ transform:scale(1); filter:brightness(1); }
+    50%{ transform:scale(1.12); filter:brightness(1.3); }
+}
+
+.player{
+    background:linear-gradient(135deg, #818cf8, #6366f1) !important;
+    box-shadow:
+        inset 0 0 0 2px #c7d2fe,
+        0 0 15px rgba(129, 140, 248, .8),
+        0 0 25px rgba(99, 102, 241, .5) !important;
+    z-index:3;
+    border-radius:6px;
+    animation:playerBounce .4s ease;
+}
+
+@keyframes playerBounce{
+    0%, 100%{ transform:scale(1); }
+    50%{ transform:scale(1.15); }
+}
+
+.player::after{
+    content:"🧙";
+    font-size:clamp(10px, 1.9vw, 20px);
+    line-height:1;
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));
+}
+
+.start::after{
+    content:"🚩";
+    font-size:clamp(8px, 1.5vw, 16px);
+}
+
+.goal::after{
+    content:"🏆";
+    font-size:clamp(9px, 1.7vw, 18px);
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));
+}
+
+.gem::after{
+    content:"💎";
+    font-size:clamp(8px, 1.5vw, 15px);
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));
+}
+
+/* ============ پیام ============ */
+.message{
+    flex-shrink:0;
+    min-height:22px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:3px 14px;
+
+    text-align:center;
+
+    font-size:clamp(10px, 1.3vw, 12px);
+    font-weight:700;
+
+    color:#c7d2fe;
+
+    border-radius:10px;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.1);
+
+    transition:all .3s;
+}
+
+.message.success{ color:#86efac; background:rgba(34, 197, 94, .15); border-color:rgba(34, 197, 94, .4); }
+.message.warning{ color:#fbbf24; background:rgba(251, 191, 36, .15); border-color:rgba(251, 191, 36, .4); }
+.message.danger{ color:#fca5a5; background:rgba(239, 68, 68, .15); border-color:rgba(239, 68, 68, .4); }
+
+/* ============ کنترل‌ها ============ */
+.controls{
+    flex-shrink:0;
+
+    display:grid;
+
+    grid-template-columns:repeat(3, 46px);
+    grid-template-rows:repeat(2, 38px);
+
+    gap:5px;
+
+    direction:ltr;
+}
+
+.control-btn{
+    border:none;
+    border-radius:10px;
+
+    background:linear-gradient(135deg, rgba(139, 92, 246, .3), rgba(59, 130, 246, .3));
+    border:1px solid rgba(255,255,255,.15);
+
+    color:#fff;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    box-shadow:
+        0 3px 0 rgba(67, 56, 202, .5),
+        inset 0 1px 0 rgba(255,255,255,.15);
+
+    transition:all .12s;
+
+    touch-action:manipulation;
+    user-select:none;
+}
+
+.control-btn:hover{
+    background:linear-gradient(135deg, rgba(139, 92, 246, .5), rgba(59, 130, 246, .5));
+}
+
+.control-btn:active{
+    transform:translateY(2px);
+    box-shadow:
+        0 1px 0 rgba(67, 56, 202, .5),
+        inset 0 1px 0 rgba(255,255,255,.15);
+}
+
+.up{ grid-column:2; grid-row:1; }
+.left{ grid-column:1; grid-row:2; }
+.down{ grid-column:2; grid-row:2; }
+.right{ grid-column:3; grid-row:2; }
+
+/* ============ دکمه‌های پایین ============ */
+.footer{
+    flex-shrink:0;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+
+    gap:6px;
+
+    padding:4px;
+
+    margin-top:4px;
+}
+
+.action-btn{
+    border:none;
+
+    padding:6px 14px;
+
+    border-radius:10px;
+
+    font-family:inherit;
+    font-size:clamp(10px, 1.2vw, 12px);
+    font-weight:800;
+
+    color:#fff;
+
+    cursor:pointer;
+
+    transition:all .2s;
+
+    white-space:nowrap;
+}
+
+.action-btn.primary{
+    background:linear-gradient(135deg, #8b5cf6, #6366f1);
+    box-shadow:0 3px 0 #4338ca, 0 0 20px rgba(139, 92, 246, .5);
+}
+
+.action-btn.primary:hover{
+    transform:translateY(-2px);
+    box-shadow:0 5px 0 #4338ca, 0 0 30px rgba(139, 92, 246, .7);
+}
+
+.action-btn.primary:active{
+    transform:translateY(2px);
+    box-shadow:0 1px 0 #4338ca;
+}
+
+.action-btn.secondary{
+    background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.2);
+}
+
+.action-btn.secondary:hover{
+    background:rgba(255,255,255,.2);
+}
+
+/* ============ مودال ============ */
+.modal{
+    position:fixed;
+    inset:0;
+
+    display:none;
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+
+    background:rgba(0,0,0,.7);
+    backdrop-filter:blur(6px);
+
+    z-index:100;
+
+    animation:fadeIn .3s ease;
+}
+
+@keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
+
+.modal.show{ display:flex; }
+
+.modal-box{
+    width:min(400px, 92vw);
+
+    padding:26px 22px;
+
+    text-align:center;
+
+    border-radius:22px;
+
+    background:
+        linear-gradient(135deg, rgba(30, 27, 75, .98), rgba(67, 56, 202, .95));
+
+    border:1px solid rgba(255,255,255,.2);
+
+    box-shadow:
+        0 30px 80px rgba(0,0,0,.6),
+        inset 0 1px 0 rgba(255,255,255,.2);
+
+    animation:popIn .4s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+@keyframes popIn{
+    0%{ transform:scale(.7); opacity:0; }
+    100%{ transform:scale(1); opacity:1; }
+}
+
+.modal-emoji{
+    font-size:56px;
+    line-height:1;
+    margin-bottom:10px;
+    animation:bounce 1s ease infinite;
+}
+
+@keyframes bounce{
+    0%, 100%{ transform:translateY(0); }
+    50%{ transform:translateY(-10px); }
+}
+
+.modal-box h2{
+    font-size:clamp(18px, 2.6vw, 24px);
+    margin-bottom:10px;
+    background:linear-gradient(135deg, #f0abfc, #818cf8, #67e8f9);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    font-weight:900;
+}
+
+.modal-box p{
+    font-size:clamp(12px, 1.5vw, 14px);
+    color:#c7d2fe;
+    line-height:1.9;
+    margin-bottom:20px;
+}
+
+.modal-box p b{ color:#fde68a; font-size:1.15em; }
+
+.modal-actions{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    flex-wrap:wrap;
+}
+
+/* ============ انتخاب سطح ============ */
+.level-select{
+    position:absolute;
+    inset:0;
+
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+
+    background:rgba(15, 23, 42, .92);
+    backdrop-filter:blur(10px);
+
+    z-index:50;
+
+    border-radius:22px;
+}
+
+.level-select.show{ display:flex; }
+
+.level-select h2{
+    font-size:clamp(18px, 2.6vw, 26px);
+    margin-bottom:8px;
+    background:linear-gradient(135deg, #f0abfc, #818cf8);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    font-weight:900;
+}
+
+.level-select p{
+    color:#c7d2fe;
+    font-size:clamp(11px, 1.3vw, 13px);
+    margin-bottom:22px;
+    text-align:center;
+}
+
+.level-buttons{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    justify-content:center;
+}
+
+.level-btn{
+    width:120px;
+    padding:16px 10px;
+
+    border:2px solid rgba(255,255,255,.2);
+    border-radius:16px;
+
+    background:rgba(255,255,255,.05);
+
+    cursor:pointer;
+
+    font-family:inherit;
+    color:#fff;
+
+    transition:all .25s;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+}
+
+.level-btn:hover{
+    transform:translateY(-5px);
+    border-color:rgba(139, 92, 246, .6);
+    background:rgba(139, 92, 246, .15);
+    box-shadow:0 15px 30px rgba(139, 92, 246, .3);
+}
+
+.level-btn .lvl-emoji{ font-size:30px; line-height:1; }
+.level-btn .lvl-title{ font-weight:800; font-size:14px; }
+.level-btn .lvl-desc{ font-size:10px; color:#a5b4fc; }
+
+/* ============ ریسپانسیو ============ */
+@media(max-width:600px){
+
+    body{ padding:3px; }
+
+    .game-container{
+        width:99vw;
+        height:99vh;
+        height:99dvh;
+        padding:6px;
+        border-radius:16px;
+    }
+
+    .header{ padding:4px 8px; margin-bottom:4px; }
+    .home-btn{ left:5px; padding:4px 7px; }
+
+    .stats-bar{ gap:4px; margin-bottom:4px; }
+    .stat{ padding:3px 7px; font-size:10px; }
+
+    .game-area{ gap:4px; }
+
+    .controls{
+        grid-template-columns:repeat(3, 42px);
+        grid-template-rows:repeat(2, 36px);
+        gap:4px;
+    }
+
+    .control-btn{ font-size:15px; }
+
+    .footer{ gap:4px; padding:3px; margin-top:3px; }
+    .action-btn{ padding:5px 11px; }
+
+    .message{ padding:3px 10px; min-height:20px; }
+}
+
+@media(max-height:520px) and (orientation:landscape){
+
+    .game-container{
+        height:99vh;
+        height:99dvh;
+        padding:5px;
+    }
+
+    .header{ padding:3px 8px; margin-bottom:3px; }
+
+    .stats-bar{ margin-bottom:3px; }
+    .stat{ padding:3px 8px; font-size:10px; }
+
+    .game-area{ gap:3px; }
+
+    .controls{
+        grid-template-columns:repeat(3, 38px);
+        grid-template-rows:repeat(2, 32px);
+        gap:3px;
+    }
+
+    .control-btn{ font-size:14px; }
+
+    .message{ min-height:18px; padding:2px 8px; font-size:9px; }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="game-container" id="gameContainer">
+
+    <header class="header">
+        <button class="home-btn" onclick="goHome()">🏠 خانه</button>
+        <h1>🧩 ماز جادویی</h1>
+    </header>
+
+    <div class="stats-bar">
+        <div class="stat">
+            <span class="icon">⭐</span>
+            <span class="value" id="score">۰</span>
+        </div>
+        <div class="stat">
+            <span class="icon">💎</span>
+            <span class="value" id="gems">۰</span>/<span class="value" id="totalGems">۰</span>
+        </div>
+        <div class="stat">
+            <span class="icon">⏱️</span>
+            <span class="value" id="time">۰</span>s
+        </div>
+        <div class="stat">
+            <span class="icon">🎯</span>
+            <span class="value" id="levelName">آسان</span>
+        </div>
+    </div>
+
+    <main class="game-area">
+
+        <div class="maze-wrapper">
+            <div class="maze" id="maze"></div>
+        </div>
+
+        <div class="message" id="message">با کلیدهای جهت‌دار یا دکمه‌ها حرکت کن!</div>
+
+        <div class="controls">
+            <button class="control-btn up" data-dir="up">▲</button>
+            <button class="control-btn left" data-dir="left">◀</button>
+            <button class="control-btn down" data-dir="down">▼</button>
+            <button class="control-btn right" data-dir="right">▶</button>
+        </div>
+
+    </main>
+
+    <div class="footer">
+        <button class="action-btn primary" id="restartBtn" onclick="restartLevel()">
+            🔄 شروع مجدد
+        </button>
+        <button class="action-btn secondary" onclick="showLevelSelect()">
+            🎚️ تغییر سطح
+        </button>
+    </div>
+
+    <div class="level-select" id="levelSelect">
+        <h2>🎚️ سطح بازی را انتخاب کن</h2>
+        <p>هرچه سطح سخت‌تر، ماز پیچیده‌تر و جواهرات بیشتر!</p>
+
+        <div class="level-buttons">
+            <button class="level-btn" onclick="startLevel('easy')">
+                <span class="lvl-emoji">🌱</span>
+                <span class="lvl-title">آسان</span>
+                <span class="lvl-desc">ماز ۱۱×۱۱</span>
+            </button>
+            <button class="level-btn" onclick="startLevel('medium')">
+                <span class="lvl-emoji">🔥</span>
+                <span class="lvl-title">متوسط</span>
+                <span class="lvl-desc">ماز ۱۵×۱۵</span>
+            </button>
+            <button class="level-btn" onclick="startLevel('hard')">
+                <span class="lvl-emoji">💀</span>
+                <span class="lvl-title">سخت</span>
+                <span class="lvl-desc">ماز ۱۹×۱۹</span>
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal" id="modal">
+    <div class="modal-box">
+        <div class="modal-emoji" id="modalEmoji">🎉</div>
+        <h2 id="modalTitle">آفرین!</h2>
+        <p id="modalText">مرحله را با موفقیت تمام کردی.</p>
+        <div class="modal-actions">
+            <button class="action-btn primary" id="modalBtn" onclick="modalAction()">ادامه</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+/* =====================================================
+   ⚙️ تنظیمات
+===================================================== */
+
+const LEVEL_CONFIG = {
+    easy:   { size: 11, gems: 3, name: "آسان"  },
+    medium: { size: 15, gems: 5, name: "متوسط" },
+    hard:   { size: 19, gems: 7, name: "سخت"   }
+};
+
+
+/* =====================================================
+   🧩 تولید ماز با DFS
+===================================================== */
+
+function generateMaze(size){
+    if(size % 2 === 0) size++;
+
+    const grid = Array(size).fill(null).map(() => Array(size).fill("#"));
+    const stack = [[1, 1]];
+    grid[1][1] = " ";
+
+    const dirs = [[-2, 0], [2, 0], [0, -2], [0, 2]];
+
+    while(stack.length > 0){
+        const [r, c] = stack[stack.length - 1];
+        const neighbors = [];
+
+        for(const [dr, dc] of dirs){
+            const nr = r + dr;
+            const nc = c + dc;
+            if(nr > 0 && nr < size - 1 && nc > 0 && nc < size - 1 && grid[nr][nc] === "#"){
+                neighbors.push([nr, nc, dr, dc]);
+            }
+        }
+
+        if(neighbors.length === 0){
+            stack.pop();
+            continue;
+        }
+
+        const [nr, nc, dr, dc] = neighbors[Math.floor(Math.random() * neighbors.length)];
+        grid[r + dr / 2][c + dc / 2] = " ";
+        grid[nr][nc] = " ";
+        stack.push([nr, nc]);
+    }
+
+    return grid;
+}
+
+
+/* =====================================================
+   🎯 BFS
+===================================================== */
+
+function findPath(grid, start, end){
+    const rows = grid.length;
+    const cols = grid[0].length;
+    const visited = Array(rows).fill(null).map(() => Array(cols).fill(false));
+    const parent = Array(rows).fill(null).map(() => Array(cols).fill(null));
+    const queue = [start];
+    visited[start[0]][start[1]] = true;
+
+    const dirs = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+    while(queue.length > 0){
+        const [r, c] = queue.shift();
+        if(r === end[0] && c === end[1]){
+            const path = [];
+            let cur = [r, c];
+            while(cur){
+                path.unshift(cur);
+                cur = parent[cur[0]][cur[1]];
+            }
+            return path;
+        }
+        for(const [dr, dc] of dirs){
+            const nr = r + dr;
+            const nc = c + dc;
+            if(nr >= 0 && nr < rows && nc >= 0 && nc < cols
+               && !visited[nr][nc] && grid[nr][nc] !== "#"){
+                visited[nr][nc] = true;
+                parent[nr][nc] = [r, c];
+                queue.push([nr, nc]);
+            }
+        }
+    }
+    return null;
+}
+
+
+/* =====================================================
+   🏗️ وضعیت
+===================================================== */
+
+const gameState = {
+    level: "easy",
+    grid: null,
+    size: 0,
+    player: { row: 1, col: 1 },
+    start: { row: 1, col: 1 },
+    goal: { row: 0, col: 0 },
+    gems: [],
+    gemsCollected: 0,
+    score: 0,
+    time: 0,
+    timerInterval: null,
+    gameOver: false,
+    levelComplete: false
+};
+
+
+function buildLevel(levelKey){
+
+    const config = LEVEL_CONFIG[levelKey];
+    gameState.level = levelKey;
+
+    if(gameState.timerInterval){
+        clearInterval(gameState.timerInterval);
+    }
+
+    const size = config.size % 2 === 0 ? config.size + 1 : config.size;
+    const grid = generateMaze(size);
+
+    const start = { row: 1, col: 1 };
+    const goal = { row: size - 2, col: size - 2 };
+
+    grid[start.row][start.col] = "S";
+    grid[goal.row][goal.col] = "G";
+
+    const path = findPath(grid, [start.row, start.col], [goal.row, goal.col]);
+    const gems = [];
+
+    if(path && path.length > 4){
+        const innerPath = path.slice(2, -2);
+        const gemCount = Math.min(config.gems, Math.floor(innerPath.length / 3));
+        const used = new Set();
+        let attempts = 0;
+
+        while(gems.length < gemCount && attempts < 100){
+            attempts++;
+            const idx = Math.floor(Math.random() * innerPath.length);
+            const key = innerPath[idx].join(",");
+            if(!used.has(key)){
+                used.add(key);
+                gems.push({ row: innerPath[idx][0], col: innerPath[idx][1], collected: false });
+            }
+        }
+    }
+
+    gameState.grid = grid;
+    gameState.size = size;
+    gameState.player = { ...start };
+    gameState.start = { ...start };
+    gameState.goal = { ...goal };
+    gameState.gems = gems;
+    gameState.gemsCollected = 0;
+    gameState.score = 0;
+    gameState.time = 0;
+    gameState.gameOver = false;
+    gameState.levelComplete = false;
+
+    document.getElementById("levelName").textContent = config.name;
+    document.getElementById("totalGems").textContent = fa(gems.length);
+    document.getElementById("gems").textContent = "۰";
+    document.getElementById("score").textContent = "۰";
+    document.getElementById("time").textContent = "۰";
+
+    setMessage("با کلیدهای جهت‌دار یا دکمه‌ها حرکت کن!", "");
+
+    drawMaze();
+    startTimer();
+}
+
+
+/* =====================================================
+   🎨 رسم ماز — محاسبه دقیق برای بزرگ‌ترین اندازه
+===================================================== */
+
+function drawMaze(){
+
+    const mazeEl = document.getElementById("maze");
+    const { grid, size, player, gems } = gameState;
+
+    mazeEl.innerHTML = "";
+    mazeEl.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+    mazeEl.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+
+    /* محاسبه اندازه بر اساس فضای واقعی wrapper */
+    const wrapper = document.querySelector(".maze-wrapper");
+    const wrapperRect = wrapper.getBoundingClientRect();
+
+    /* حاشیه‌های maze: padding 6px در هر طرف + border */
+    const padding = 16;
+    const availableW = wrapperRect.width - padding;
+    const availableH = wrapperRect.height - padding;
+
+    /* اندازه هر خانه (با حذف gap و padding داخلی) */
+    const gapTotal = (size - 1) * 1;
+    const maxCellW = (availableW - gapTotal) / size;
+    const maxCellH = (availableH - gapTotal) / size;
+    const cellSize = Math.floor(Math.min(maxCellW, maxCellH));
+
+    const mazeSize = cellSize * size + gapTotal + padding;
+
+    mazeEl.style.width = `${mazeSize}px`;
+    mazeEl.style.height = `${mazeSize}px`;
+
+    for(let r = 0; r < size; r++){
+        for(let c = 0; c < size; c++){
+            const cell = document.createElement("div");
+            cell.className = "cell";
+
+            const val = grid[r][c];
+            const isPlayer = (r === player.row && c === player.col);
+
+            if(val === "#"){
+                cell.classList.add("wall");
+            } else {
+                cell.classList.add("path");
+            }
+
+            if(val === "S" && !isPlayer){
+                cell.classList.add("start");
+            }
+            if(val === "G"){
+                cell.classList.add("goal");
+            }
+
+            const gem = gems.find(g => g.row === r && g.col === c && !g.collected);
+            if(gem && !isPlayer){
+                cell.classList.add("gem");
+            }
+
+            if(isPlayer){
+                cell.classList.add("player");
+                cell.textContent = "";
+            }
+
+            mazeEl.appendChild(cell);
+        }
+    }
+}
+
+
+/* =====================================================
+   🏃 حرکت
+===================================================== */
+
+function move(direction){
+
+    if(gameState.gameOver || gameState.levelComplete) return;
+
+    const { grid, size, player } = gameState;
+    let nr = player.row;
+    let nc = player.col;
+
+    if(direction === "up")    nr--;
+    if(direction === "down")  nr++;
+    if(direction === "left")  nc--;
+    if(direction === "right") nc++;
+
+    if(nr < 0 || nr >= size || nc < 0 || nc >= size) return;
+
+    if(grid[nr][nc] === "#"){
+        setMessage("🧱 دیوار!", "warning");
+        playTone(200, 0.1, "square", 0.08);
+        return;
+    }
+
+    player.row = nr;
+    player.col = nc;
+
+    const gem = gameState.gems.find(g => g.row === nr && g.col === nc && !g.collected);
+    if(gem){
+        gem.collected = true;
+        gameState.gemsCollected++;
+        gameState.score += 25;
+
+        document.getElementById("gems").textContent = fa(gameState.gemsCollected);
+        document.getElementById("score").textContent = fa(gameState.score);
+
+        flashStat("💎");
+        setMessage(`💎 جواهر گرفتی! +۲۵ امتیاز`, "success");
+        playTone(880, 0.12, "sine", 0.15);
+        setTimeout(() => playTone(1175, 0.15, "sine", 0.15), 100);
+    }
+
+    if(nr === gameState.goal.row && nc === gameState.goal.col){
+        levelComplete();
+        return;
+    }
+
+    drawMaze();
+}
+
+
+/* =====================================================
+   🏆 پایان
+===================================================== */
+
+function levelComplete(){
+
+    gameState.levelComplete = true;
+
+    if(gameState.timerInterval){
+        clearInterval(gameState.timerInterval);
+    }
+
+    const allGems = gameState.gems.length;
+    const bonus = allGems > 0 && gameState.gemsCollected === allGems ? 100 : 0;
+    const timeBonus = Math.max(0, 60 - gameState.time) * 2;
+
+    gameState.score += bonus + timeBonus;
+
+    document.getElementById("score").textContent = fa(gameState.score);
+
+    playTone(523, 0.15, "sine", 0.2);
+    setTimeout(() => playTone(659, 0.15, "sine", 0.2), 130);
+    setTimeout(() => playTone(784, 0.2, "sine", 0.2), 260);
+    setTimeout(() => playTone(1047, 0.3, "sine", 0.2), 400);
+
+    setMessage("🎉 مرحله را کامل کردی!", "success");
+
+    setTimeout(() => {
+        showModal(
+            "🏆 آفرین!",
+            `مرحله را با موفقیت تمام کردی!<br>
+             ⭐ امتیاز نهایی: <b>${fa(gameState.score)}</b><br>
+             💎 جواهرات: <b>${fa(gameState.gemsCollected)}/${fa(allGems)}</b><br>
+             ⏱️ زمان: <b>${fa(gameState.time)} ثانیه</b>`,
+            "restart"
+        );
+    }, 600);
+}
+
+
+/* =====================================================
+   ⏱️ تایمر
+===================================================== */
+
+function startTimer(){
+    gameState.time = 0;
+    document.getElementById("time").textContent = "۰";
+
+    gameState.timerInterval = setInterval(() => {
+        gameState.time++;
+        document.getElementById("time").textContent = fa(gameState.time);
+    }, 1000);
+}
+
+
+/* =====================================================
+   🎮 کنترل‌ها
+===================================================== */
+
+document.addEventListener("keydown", (e) => {
+    const map = {
+        "ArrowUp": "up", "w": "up", "W": "up",
+        "ArrowDown": "down", "s": "down", "S": "down",
+        "ArrowLeft": "left", "a": "left", "A": "left",
+        "ArrowRight": "right", "d": "right", "D": "right"
+    };
+    if(map[e.key]){
+        e.preventDefault();
+        move(map[e.key]);
+    }
+});
+
+document.querySelectorAll(".control-btn").forEach(btn => {
+    const dir = btn.dataset.dir;
+    btn.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        move(dir);
+    });
+});
+
+
+/* =====================================================
+   🔊 صدا
+===================================================== */
+
+let audioCtx = null;
+
+function playTone(freq, duration = 0.15, type = "sine", volume = 0.15){
+    try{
+        if(!audioCtx){
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if(audioCtx.state === "suspended") audioCtx.resume();
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = type;
+        osc.frequency.value = freq;
+
+        gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    } catch(e){}
+}
+
+
+/* =====================================================
+   💬 پیام
+===================================================== */
+
+function setMessage(text, type){
+    const el = document.getElementById("message");
+    el.textContent = text;
+    el.className = "message";
+    if(type) el.classList.add(type);
+}
+
+
+function flashStat(icon){
+    document.querySelectorAll(".stat").forEach(stat => {
+        if(stat.textContent.includes(icon)){
+            stat.classList.add("highlight");
+            setTimeout(() => stat.classList.remove("highlight"), 800);
+        }
+    });
+}
+
+
+function fa(n){
+    return String(n).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
+}
+
+
+/* =====================================================
+   🎚️ سطح
+===================================================== */
+
+function showLevelSelect(){
+    if(gameState.timerInterval){
+        clearInterval(gameState.timerInterval);
+    }
+    document.getElementById("levelSelect").classList.add("show");
+}
+
+function startLevel(key){
+    document.getElementById("levelSelect").classList.remove("show");
+    buildLevel(key);
+}
+
+
+/* =====================================================
+   🔄 شروع مجدد
+===================================================== */
+
+function restartLevel(){
+    buildLevel(gameState.level);
+}
+
+
+function goHome(){
+    window.location.href = "dashboard.html";
+}
+
+
+/* =====================================================
+   📦 مودال
+===================================================== */
+
+let modalActionType = "restart";
+
+function showModal(title, text, actionType = "restart"){
+    document.getElementById("modalEmoji").textContent = "🏆";
+    document.getElementById("modalTitle").textContent = title;
+    document.getElementById("modalText").innerHTML = text;
+    document.getElementById("modalBtn").textContent = "🔄 شروع مجدد";
+    modalActionType = actionType;
+    document.getElementById("modal").classList.add("show");
+}
+
+function modalAction(){
+    document.getElementById("modal").classList.remove("show");
+    if(modalActionType === "restart"){
+        restartLevel();
+    }
+}
+
+
+/* =====================================================
+   🔄 ری‌سایز
+===================================================== */
+
+let resizeTimeout;
+window.addEventListener("resize", () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        if(gameState.grid){
+            drawMaze();
+        }
+    }, 200);
+});
+
+
+/* =====================================================
+   🚀 شروع
+===================================================== */
+
+window.addEventListener("load", () => {
+    /* صبر کوچک تا CSS کامل اعمال شود */
+    setTimeout(() => buildLevel("easy"), 50);
+});
+
+</script>
+
+</body>
+</html>

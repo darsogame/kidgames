@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🍎 خوراکی سالم یا ناسالم؟</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; width: 100%; overflow: hidden; position: fixed; }
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: linear-gradient(135deg, #22c55e 0%, #84cc16 50%, #f59e0b 100%);
+    display: flex; align-items: stretch; justify-content: center;
+    padding: 8px; -webkit-tap-highlight-color: transparent;
+  }
+  .container {
+    width: 100%; max-width: 1000px; height: 100%;
+    display: grid; grid-template-rows: auto 1fr auto;
+    gap: 8px; background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px); border-radius: 20px; padding: 10px;
+    border: 2px solid rgba(255,255,255,0.3);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3); overflow: hidden;
+  }
+  .header { text-align: center; padding: 2px 0; }
+  .header h1 {
+    font-size: clamp(1rem, 2.6vw, 1.6rem); color: #fff;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.3); line-height: 1.2;
+  }
+  .header p {
+    color: #fef3c7; font-size: clamp(0.65rem, 1.5vw, 0.9rem);
+    font-weight: 700; line-height: 1.3;
+  }
+  .game-area {
+    background: rgba(255,255,255,0.97); border-radius: 16px;
+    position: relative; overflow: hidden; min-height: 0;
+    box-shadow: inset 0 0 30px rgba(34,197,94,0.1);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: space-between;
+    padding: 12px; gap: 8px;
+  }
+  .food-stage {
+    position: relative; flex: 1; width: 100%;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 0;
+  }
+  .baskets-row {
+    display: flex; justify-content: space-between;
+    width: 100%; gap: 12px; flex-shrink: 0;
+  }
+  .basket {
+    flex: 1; max-width: 280px;
+    height: clamp(90px, 16vh, 130px);
+    border-radius: 16px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 4px; border: 4px dashed;
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative; cursor: default;
+  }
+  .basket.healthy {
+    border-color: #22c55e;
+    background: linear-gradient(180deg, rgba(220,252,231,0.9), rgba(134,239,172,0.7));
+  }
+  .basket.unhealthy {
+    border-color: #ef4444;
+    background: linear-gradient(180deg, rgba(254,226,226,0.9), rgba(252,165,165,0.7));
+  }
+  .basket.drag-over {
+    transform: scale(1.05); border-style: solid;
+  }
+  .basket.healthy.drag-over {
+    background: linear-gradient(180deg, #86efac, #4ade80);
+    box-shadow: 0 8px 25px rgba(34,197,94,0.6);
+  }
+  .basket.unhealthy.drag-over {
+    background: linear-gradient(180deg, #fca5a5, #f87171);
+    box-shadow: 0 8px 25px rgba(239,68,68,0.6);
+  }
+  .basket-icon { font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1; }
+  .basket-label {
+    font-size: clamp(0.7rem, 1.6vw, 0.95rem);
+    font-weight: 900;
+  }
+  .basket.healthy .basket-label { color: #15803d; }
+  .basket.unhealthy .basket-label { color: #b91c1c; }
+  .basket-count {
+    position: absolute; top: 6px; left: 6px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 50%;
+    width: clamp(24px, 5vw, 32px);
+    height: clamp(24px, 5vw, 32px);
+    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+    font-weight: 900; color: #374151;
+  }
+  /* ═══ غذا (ایموجی + نام) ═══ */
+  .food {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex; flex-direction: column;
+    align-items: center; gap: 6px;
+    cursor: grab; touch-action: none; user-select: none;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25));
+    transition: transform 0.15s, filter 0.15s;
+    z-index: 10;
+    animation: foodAppear 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .food .food-emoji {
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    line-height: 1;
+  }
+  .food .food-name {
+    font-size: clamp(0.7rem, 1.5vw, 0.95rem);
+    font-weight: 900;
+    color: #fff;
+    background: rgba(0,0,0,0.65);
+    padding: 4px 14px;
+    border-radius: 14px;
+    white-space: nowrap;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    letter-spacing: 0.5px;
+  }
+  @keyframes foodAppear {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.3) rotate(-180deg); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+  }
+  .food:active { cursor: grabbing; }
+  .food.dragging {
+    z-index: 999;
+    transform: translate(-50%, -50%) scale(1.2);
+    filter: drop-shadow(0 12px 24px rgba(0,0,0,0.4));
+  }
+  .food.correct {
+    animation: correctAnim 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    pointer-events: none;
+  }
+  @keyframes correctAnim {
+    0% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(0) rotate(360deg); opacity: 0; }
+  }
+  .food.wrong { animation: wrongAnim 0.5s ease; }
+  @keyframes wrongAnim {
+    0%,100% { transform: translate(-50%, -50%) scale(1); }
+    25% { transform: translate(-50%, -50%) scale(1.1) rotate(-10deg); }
+    75% { transform: translate(-50%, -50%) scale(1.1) rotate(10deg); }
+  }
+  .question-badge {
+    position: absolute; top: 8px; left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff; padding: 6px 20px; border-radius: 20px;
+    font-size: clamp(0.7rem, 1.6vw, 0.9rem);
+    font-weight: 900; white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(217,119,6,0.4);
+    z-index: 5;
+  }
+  .feedback-toast {
+    position: absolute; top: 45%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    padding: 10px 24px; border-radius: 20px;
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
+    font-weight: 900; color: #fff;
+    white-space: nowrap; opacity: 0;
+    pointer-events: none; z-index: 500;
+    transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    max-width: 90%;
+    text-align: center;
+  }
+  .feedback-toast.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  .feedback-toast.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 8px 25px rgba(34,197,94,0.6);
+  }
+  .feedback-toast.wrong {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 8px 25px rgba(239,68,68,0.6);
+  }
+  .bottom-bar {
+    display: flex; justify-content: center; align-items: center;
+    gap: clamp(8px, 1.5vw, 15px);
+    background: rgba(255,255,255,0.95); border-radius: 14px;
+    padding: 6px 12px; flex-shrink: 0; flex-wrap: wrap;
+  }
+  .btn {
+    height: clamp(42px, 6.5vh, 55px);
+    padding: 0 clamp(15px, 3vw, 30px);
+    border-radius: 30px; border: 2px solid #fff;
+    color: #fff; font-size: clamp(0.8rem, 1.8vw, 1.05rem);
+    font-weight: 900; font-family: inherit; cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    display: flex; align-items: center; justify-content: center;
+    gap: 5px; white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+    z-index: 20; position: relative;
+  }
+  .btn:hover { transform: scale(1.05); }
+  .btn:active { transform: scale(0.97); }
+  .reset-btn {
+    background: linear-gradient(135deg, #94a3b8, #64748b);
+    box-shadow: 0 6px 15px rgba(100,116,139,0.5);
+  }
+  .next-btn {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 6px 15px rgba(34,197,94,0.5);
+    opacity: 0.45; pointer-events: none;
+  }
+  .next-btn.active { opacity: 1; pointer-events: auto; }
+  .score-box {
+    background: rgba(255,255,255,0.95);
+    border-radius: 14px; padding: 6px 16px;
+    font-size: clamp(0.8rem, 1.8vw, 1.05rem);
+    font-weight: 900; color: #16a34a; white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .progress-box {
+    background: rgba(255,255,255,0.95);
+    border-radius: 14px; padding: 6px 16px;
+    font-size: clamp(0.8rem, 1.8vw, 1.05rem);
+    font-weight: 900; color: #d97706; white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .finish-overlay {
+    position: absolute; inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s; z-index: 900;
+    border-radius: 16px;
+  }
+  .finish-overlay.show { opacity: 1; pointer-events: auto; }
+  .finish-card {
+    background: linear-gradient(135deg, #fff, #f0fdf4);
+    border-radius: 24px;
+    padding: clamp(20px, 4vh, 35px) clamp(25px, 5vw, 45px);
+    display: flex; flex-direction: column;
+    align-items: center; gap: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    transform: scale(0.3) translateY(50px);
+    opacity: 0;
+    transition: all 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    max-width: 90%; text-align: center;
+  }
+  .finish-card.show { transform: scale(1) translateY(0); opacity: 1; }
+  .finish-card .emoji { font-size: clamp(2.5rem, 8vw, 4rem); }
+  .finish-card .title {
+    font-size: clamp(1.1rem, 2.8vw, 1.6rem);
+    font-weight: 900; color: #15803d;
+  }
+  .finish-card .subtitle {
+    font-size: clamp(0.8rem, 1.8vw, 1rem);
+    font-weight: 700; color: #4b5563;
+  }
+  .finish-card .stars {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    letter-spacing: 4px;
+  }
+  @media (max-width: 640px) {
+    body { padding: 5px; }
+    .container { padding: 8px; gap: 6px; border-radius: 16px; }
+    .bottom-bar { padding: 5px 8px; gap: 6px; }
+    .btn { height: 42px; padding: 0 12px; font-size: 0.8rem; }
+    .basket { height: 80px; border-width: 3px; }
+    .food .food-emoji { font-size: 3rem; }
+    .food .food-name { font-size: 0.65rem; padding: 3px 10px; }
+  }
+  @media (max-height: 500px) and (orientation: landscape) {
+    .header h1 { font-size: 0.85rem; }
+    .header p { font-size: 0.6rem; }
+    .btn { height: 36px; }
+    .basket { height: 70px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🍎 خوراکی سالم یا ناسالم؟</h1>
+    <p>هر غذا را به سبد درست بکش</p>
+    <a href="dashboard.html" 
+style="position: fixed;
+       top: 12px;
+       right: 12px;
+       z-index: 9999;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       gap: 6px;
+       padding: 10px 18px;
+       background: rgba(255, 255, 255, 0.95);
+       color: #374151;
+       font-family: 'Vazirmatn', sans-serif;
+       font-size: 0.9rem;
+       font-weight: 900;
+       text-decoration: none;
+       border-radius: 30px;
+       border: 2px solid rgba(255, 255, 255, 0.8);
+       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+       transition: all 0.3s ease;
+       -webkit-tap-highlight-color: transparent;"
+onmouseover="this.style.transform='scale(1.08)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.3)';"
+onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.2)';">
+<span style="font-size: 1.1rem;">🏠</span>
+<span>خانه</span>
+</a>
+  </div>
+
+  <div class="game-area" id="gameArea">
+    <div class="question-badge">🥗 این خوراکی کدام سبد؟</div>
+
+    <div class="food-stage" id="foodStage"></div>
+
+    <div class="baskets-row">
+      <div class="basket healthy" id="healthyBasket" data-type="healthy">
+        <div class="basket-icon">🥗</div>
+        <div class="basket-label">سالم</div>
+        <div class="basket-count" id="healthyCount">۰</div>
+      </div>
+      <div class="basket unhealthy" id="unhealthyBasket" data-type="unhealthy">
+        <div class="basket-icon">🍟</div>
+        <div class="basket-label">ناسالم</div>
+        <div class="basket-count" id="unhealthyCount">۰</div>
+      </div>
+    </div>
+
+    <div class="feedback-toast" id="feedbackToast"></div>
+
+    <div class="finish-overlay" id="finishOverlay">
+      <div class="finish-card" id="finishCard">
+        <div class="emoji">🏆</div>
+        <div class="title">آفرین!</div>
+        <div class="subtitle" id="finishSubtitle">همه غذاها را درست دسته‌بندی کردی</div>
+        <div class="stars" id="finishStars">⭐⭐⭐</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="score-box" id="scoreBox">امتیاز: ۰</div>
+    <div class="progress-box" id="progressBox">۰ از ۱۲</div>
+    <button class="btn reset-btn" id="resetBtn">🔄 شروع مجدد</button>
+    <button class="btn next-btn" id="nextBtn">➡️ دسته بعدی</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   🍎 خوراکی سالم یا ناسالم؟ — با نمایش نام زیر هر غذا
+   ══════════════════════════════════════════════════════════════ */
+
+const foodStage = document.getElementById('foodStage');
+const healthyBasket = document.getElementById('healthyBasket');
+const unhealthyBasket = document.getElementById('unhealthyBasket');
+const healthyCount = document.getElementById('healthyCount');
+const unhealthyCount = document.getElementById('unhealthyCount');
+const feedbackToast = document.getElementById('feedbackToast');
+const finishOverlay = document.getElementById('finishOverlay');
+const finishCard = document.getElementById('finishCard');
+const finishSubtitle = document.getElementById('finishSubtitle');
+const finishStars = document.getElementById('finishStars');
+const scoreBox = document.getElementById('scoreBox');
+const progressBox = document.getElementById('progressBox');
+const nextBtn = document.getElementById('nextBtn');
+const resetBtn = document.getElementById('resetBtn');
+
+const rounds = [
+  {
+    name: 'میوه و سبزیجات',
+    foods: [
+      { emoji: '🍎', name: 'سیب', healthy: true },
+      { emoji: '🍌', name: 'موز', healthy: true },
+      { emoji: '🥕', name: 'هویج', healthy: true },
+      { emoji: '🍇', name: 'انگور', healthy: true },
+      { emoji: '🍩', name: 'دونات', healthy: false },
+      { emoji: '🍭', name: 'آبنبات', healthy: false },
+      { emoji: '🍟', name: 'سیب‌زمینی سرخ‌کرده', healthy: false },
+      { emoji: '🥤', name: 'نوشابه', healthy: false }
+    ]
+  },
+  {
+    name: 'صبحانه و خوراکی',
+    foods: [
+      { emoji: '🥛', name: 'شیر', healthy: true },
+      { emoji: '🥚', name: 'تخم‌مرغ', healthy: true },
+      { emoji: '🥜', name: 'آجیل', healthy: true },
+      { emoji: '🍞', name: 'نان سبوس‌دار', healthy: true },
+      { emoji: '🍫', name: 'شکلات', healthy: false },
+      { emoji: '🍪', name: 'بیسکویت شیرین', healthy: false },
+      { emoji: '🧁', name: 'کیک خامه‌ای', healthy: false },
+      { emoji: '🍿', name: 'پاپ‌کورن شور', healthy: false }
+    ]
+  },
+  {
+    name: 'غذای اصلی',
+    foods: [
+      { emoji: '🐟', name: 'ماهی', healthy: true },
+      { emoji: '🥗', name: 'سالاد', healthy: true },
+      { emoji: '🍚', name: 'برنج قهوه‌ای', healthy: true },
+      { emoji: '🍲', name: 'سوپ سبزیجات', healthy: true },
+      { emoji: '🍔', name: 'همبرگر', healthy: false },
+      { emoji: '🌭', name: 'سوسیس', healthy: false },
+      { emoji: '🍕', name: 'پیتزا', healthy: false },
+      { emoji: '🍗', name: 'مرغ سوخاری', healthy: false }
+    ]
+  }
+];
+
+let currentRoundIndex = 0;
+let currentRound = null;
+let currentFoodIndex = 0;
+let score = 0;
+let healthyTotal = 0;
+let unhealthyTotal = 0;
+let locked = false;
+let currentFoodEl = null;
+let currentFoodData = null;
+
+function startRound() {
+  currentRound = {
+    ...rounds[currentRoundIndex],
+    foods: shuffle([...rounds[currentRoundIndex].foods])
+  };
+  currentFoodIndex = 0;
+  score = 0;
+  healthyTotal = 0;
+  unhealthyTotal = 0;
+  locked = false;
+  currentFoodEl = null;
+  currentFoodData = null;
+
+  updateScore();
+  updateCounts();
+  updateProgress();
+  healthyBasket.classList.remove('drag-over');
+  unhealthyBasket.classList.remove('drag-over');
+  finishOverlay.classList.remove('show');
+  finishCard.classList.remove('show');
+  nextBtn.classList.remove('active');
+  feedbackToast.classList.remove('show');
+  foodStage.innerHTML = '';
+
+  showNextFood();
+}
+
+function showNextFood() {
+  if (currentFoodIndex >= currentRound.foods.length) {
+    finishRound();
+    return;
+  }
+  currentFoodData = currentRound.foods[currentFoodIndex];
+  currentFoodEl = document.createElement('div');
+  currentFoodEl.className = 'food';
+  // ساختار: ایموجی بالا + نام زیر
+  currentFoodEl.innerHTML = `
+    <span class="food-emoji">${currentFoodData.emoji}</span>
+    <span class="food-name">${currentFoodData.name}</span>
+  `;
+  currentFoodEl.style.left = '50%';
+  currentFoodEl.style.top = '50%';
+  foodStage.appendChild(currentFoodEl);
+  attachDragEvents(currentFoodEl);
+}
+
+function attachDragEvents(el) {
+  let isDragging = false;
+  let startX = 0, startY = 0;
+  let origLeft = 0, origTop = 0;
+
+  function getPoint(e) {
+    if (e.touches && e.touches.length > 0) {
+      return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+    return { x: e.clientX, y: e.clientY };
+  }
+
+  function onStart(e) {
+    if (locked) return;
+    e.preventDefault();
+    const pt = getPoint(e);
+    isDragging = true;
+    startX = pt.x; startY = pt.y;
+    const elRect = el.getBoundingClientRect();
+    const stageRect = foodStage.getBoundingClientRect();
+    origLeft = elRect.left - stageRect.left;
+    origTop = elRect.top - stageRect.top;
+    el.style.left = origLeft + 'px';
+    el.style.top = origTop + 'px';
+    el.style.transform = 'translate(0, 0)';
+    el.classList.add('dragging');
+    el.style.transition = 'none';
+    el.style.animation = 'none';
+  }
+
+  function onMove(e) {
+    if (!isDragging) return;
+    e.preventDefault();
+    const pt = getPoint(e);
+    el.style.left = (origLeft + (pt.x - startX)) + 'px';
+    el.style.top = (origTop + (pt.y - startY)) + 'px';
+    checkBasketHover(pt);
+  }
+
+  function onEnd(e) {
+    if (!isDragging) return;
+    isDragging = false;
+    el.classList.remove('dragging');
+    el.style.transition = '';
+    healthyBasket.classList.remove('drag-over');
+    unhealthyBasket.classList.remove('drag-over');
+    const pt = getPoint(e);
+    const target = getBasketUnderPoint(pt);
+    if (target) {
+      handleDrop(target, el);
+    } else {
+      returnToCenter(el);
+    }
+  }
+
+  el.addEventListener('mousedown', onStart);
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onEnd);
+  el.addEventListener('touchstart', onStart, { passive: false });
+  document.addEventListener('touchmove', onMove, { passive: false });
+  document.addEventListener('touchend', onEnd);
+  document.addEventListener('touchcancel', onEnd);
+}
+
+function returnToCenter(el) {
+  el.style.transition = 'all 0.3s cubic-bezier(0.34,1.56,0.64,1)';
+  el.style.left = '50%';
+  el.style.top = '50%';
+  el.style.transform = 'translate(-50%, -50%)';
+  setTimeout(() => { el.style.transition = ''; }, 350);
+}
+
+function checkBasketHover(pt) {
+  const target = getBasketUnderPoint(pt);
+  healthyBasket.classList.remove('drag-over');
+  unhealthyBasket.classList.remove('drag-over');
+  if (target === 'healthy') healthyBasket.classList.add('drag-over');
+  else if (target === 'unhealthy') unhealthyBasket.classList.add('drag-over');
+}
+
+function getBasketUnderPoint(pt) {
+  const hRect = healthyBasket.getBoundingClientRect();
+  const uRect = unhealthyBasket.getBoundingClientRect();
+  if (pt.x >= hRect.left && pt.x <= hRect.right && pt.y >= hRect.top && pt.y <= hRect.bottom) {
+    return 'healthy';
+  }
+  if (pt.x >= uRect.left && pt.x <= uRect.right && pt.y >= uRect.top && pt.y <= uRect.bottom) {
+    return 'unhealthy';
+  }
+  return null;
+}
+
+function handleDrop(basketType, el) {
+  if (locked) return;
+  const isHealthy = currentFoodData.healthy;
+  const isCorrect = (basketType === 'healthy' && isHealthy) || (basketType === 'unhealthy' && !isHealthy);
+
+  if (isCorrect) {
+    locked = true;
+    el.classList.add('correct');
+    score++;
+    if (isHealthy) healthyTotal++;
+    else unhealthyTotal++;
+    updateScore();
+    updateCounts();
+    updateProgress();
+    playCorrectSound();
+    // پیام شامل نام غذا
+    showToast(`✅ ${currentFoodData.name} درست بود!`, 'correct');
+    setTimeout(() => {
+      el.remove();
+      currentFoodEl = null;
+      currentFoodIndex++;
+      locked = false;
+      showNextFood();
+    }, 700);
+  } else {
+    el.classList.add('wrong');
+    playErrorSound();
+    // پیام شامل نام غذا و دلیل
+    const reason = isHealthy ? 'این غذا سالم است' : 'این غذا ناسالم است';
+    showToast(`❌ ${currentFoodData.name} — ${reason}!`, 'wrong');
+    setTimeout(() => {
+      el.classList.remove('wrong');
+      returnToCenter(el);
+    }, 800);
+  }
+}
+
+function showToast(text, type) {
+  feedbackToast.textContent = text;
+  feedbackToast.className = 'feedback-toast show ' + type;
+  clearTimeout(showToast.timeout);
+  showToast.timeout = setTimeout(() => {
+    feedbackToast.classList.remove('show');
+  }, 1600);
+}
+
+function updateCounts() {
+  healthyCount.textContent = toPersianNum(healthyTotal);
+  unhealthyCount.textContent = toPersianNum(unhealthyTotal);
+}
+function updateScore() {
+  scoreBox.textContent = `امتیاز: ${toPersianNum(score)}`;
+}
+function updateProgress() {
+  const total = currentRound ? currentRound.foods.length : 0;
+  const done = currentFoodIndex;
+  progressBox.textContent = `${toPersianNum(done)} از ${toPersianNum(total)}`;
+}
+
+function finishRound() {
+  locked = true;
+  updateProgress();
+  const total = currentRound.foods.length;
+
+  let stars = '⭐';
+  if (score >= total) stars = '⭐⭐⭐';
+  else if (score >= total * 0.7) stars = '⭐⭐';
+  finishStars.textContent = stars;
+
+  if (score >= total) {
+    finishSubtitle.textContent = `عالی! همه ${toPersianNum(total)} غذا را درست دسته‌بندی کردی`;
+  } else {
+    finishSubtitle.textContent = `${toPersianNum(score)} از ${toPersianNum(total)} درست — دوباره تلاش کن`;
+  }
+
+  finishOverlay.classList.add('show');
+  setTimeout(() => finishCard.classList.add('show'), 100);
+
+  if (score >= total) {
+    playSuccessSound();
+    nextBtn.classList.add('active');
+  } else {
+    playErrorSound();
+    resetBtn.style.animation = 'btnGlow 1.5s ease-in-out infinite';
+  }
+}
+
+nextBtn.addEventListener('click', () => {
+  if (currentRoundIndex < rounds.length - 1) {
+    currentRoundIndex++;
+    resetBtn.style.animation = '';
+    startRound();
+  } else {
+    finishSubtitle.textContent = '🏆 تبریک! همه دسته‌ها را کامل کردی';
+  }
+});
+
+resetBtn.addEventListener('click', () => {
+  currentRoundIndex = 0;
+  resetBtn.style.animation = '';
+  startRound();
+});
+
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+  return audioCtx;
+}
+function playCorrectSound() {
+  const ctx = getAudioCtx(); if (!ctx) return;
+  [659.25, 783.99, 1046.50].forEach((freq, i) => {
+    setTimeout(() => {
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq; osc.type = 'sine';
+      gain.gain.value = 0.08;
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.2);
+    }, i * 70);
+  });
+}
+function playErrorSound() {
+  const ctx = getAudioCtx(); if (!ctx) return;
+  const osc = ctx.createOscillator(); const gain = ctx.createGain();
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.type = 'square';
+  osc.frequency.setValueAtTime(300, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.3);
+  gain.gain.value = 0.06;
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+  osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.3);
+}
+function playSuccessSound() {
+  const ctx = getAudioCtx(); if (!ctx) return;
+  [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+    setTimeout(() => {
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq; gain.gain.value = 0.1;
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.3);
+    }, i * 100);
+  });
+}
+function toPersianNum(num) {
+  const digits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  return String(num).replace(/\d/g, d => digits[d]);
+}
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+window.addEventListener('load', () => {
+  startRound();
+});
+</script>
+
+</body>
+</html>

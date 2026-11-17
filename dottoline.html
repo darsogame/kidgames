@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>✏️ از نقطه تا خط</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; width: 100%; overflow: hidden; position: fixed; }
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);
+    display: flex; align-items: stretch; justify-content: center;
+    padding: 8px; -webkit-tap-highlight-color: transparent;
+  }
+  .container {
+    width: 100%; max-width: 1000px; height: 100%;
+    display: grid; grid-template-rows: auto 1fr auto auto;
+    gap: 8px; background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px); border-radius: 20px; padding: 10px;
+    border: 2px solid rgba(255,255,255,0.3);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3); overflow: hidden;
+  }
+  .header { text-align: center; padding: 2px 0; }
+  .header h1 {
+    font-size: clamp(1rem, 2.6vw, 1.6rem); color: #fff;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.3); line-height: 1.2;
+  }
+  .header p {
+    color: #fef3c7; font-size: clamp(0.65rem, 1.5vw, 0.9rem);
+    font-weight: 700; line-height: 1.3;
+  }
+  .game-area {
+    background: rgba(255,255,255,0.97); border-radius: 16px;
+    position: relative; overflow: hidden; min-height: 0;
+    box-shadow: inset 0 0 30px rgba(96,165,250,0.15);
+    display: flex; align-items: center; justify-content: center;
+  }
+  svg { width: 100%; height: 100%; display: block; touch-action: none; user-select: none; }
+  .target-path {
+    stroke: #e2e8f0; stroke-width: 10; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+    opacity: 0.55;
+  }
+  .target-path.covered { stroke: #bbf7d0; opacity: 1; }
+  .drawn-path {
+    stroke: #22c55e; stroke-width: 9; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+    filter: drop-shadow(0 2px 4px rgba(34,197,94,0.4));
+  }
+  .start-dot { fill: #f59e0b; animation: pulse 1.1s ease-in-out infinite;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+  .end-dot { fill: #ef4444; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+  .end-dot.reached { fill: #22c55e; }
+  @keyframes pulse { 0%,100% { r: 16; } 50% { r: 20; } }
+  .dot-label {
+    font-family: 'Vazirmatn', sans-serif; font-weight: 900;
+    font-size: 15px; fill: #fff; pointer-events: none;
+    user-select: none; text-anchor: middle; dominant-baseline: central;
+  }
+  .hint-text {
+    position: absolute; bottom: 12px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.95); padding: 6px 18px;
+    border-radius: 20px; font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+    font-weight: 900; color: #4b5563;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    pointer-events: none; white-space: nowrap; transition: opacity 0.3s;
+  }
+  .hint-text.hidden { opacity: 0; }
+  .progress-bar {
+    background: rgba(255,255,255,0.95); border-radius: 14px;
+    padding: 8px 15px; display: flex; align-items: center;
+    gap: 12px; flex-shrink: 0;
+  }
+  .progress-text {
+    font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+    font-weight: 900; color: #4b5563; white-space: nowrap;
+  }
+  .progress-track {
+    flex: 1; height: 14px; background: #e5e7eb;
+    border-radius: 10px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+    border-radius: 10px; transition: width 0.2s ease;
+  }
+  .progress-count {
+    font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+    font-weight: 900; color: #22c55e; white-space: nowrap;
+  }
+  .bottom-bar {
+    display: flex; justify-content: center; align-items: center;
+    gap: clamp(8px, 1.5vw, 15px);
+    background: rgba(255,255,255,0.95); border-radius: 14px;
+    padding: 6px 12px; flex-shrink: 0;
+  }
+  .btn {
+    height: clamp(42px, 6.5vh, 55px);
+    padding: 0 clamp(15px, 3vw, 30px);
+    border-radius: 30px; border: 2px solid #fff;
+    color: #fff; font-size: clamp(0.8rem, 1.8vw, 1.05rem);
+    font-weight: 900; font-family: inherit; cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    display: flex; align-items: center; justify-content: center;
+    gap: 5px; white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:hover { transform: scale(1.05); }
+  .btn:active { transform: scale(0.97); }
+  .reset-btn {
+    background: linear-gradient(135deg, #94a3b8, #64748b);
+    box-shadow: 0 6px 15px rgba(100,116,139,0.5);
+  }
+  .next-btn {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 6px 15px rgba(34,197,94,0.5);
+    opacity: 0.45; pointer-events: none;
+  }
+  .next-btn.active { opacity: 1; pointer-events: auto; }
+  .result-indicator {
+    width: clamp(42px, 6.5vh, 55px); height: clamp(42px, 6.5vh, 55px);
+    border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: clamp(1.3rem, 3vw, 1.8rem);
+    font-weight: 900; color: #fff; opacity: 0; transform: scale(0.3);
+    transition: all 0.5s cubic-bezier(0.34,1.56,0.64,1); flex-shrink: 0;
+  }
+  .result-indicator.show { opacity: 1; transform: scale(1); }
+  .result-indicator.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 6px 20px rgba(34,197,94,0.6);
+  }
+  .result-indicator.wrong {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 6px 20px rgba(239,68,68,0.6);
+    animation: wrongShake 0.5s ease;
+  }
+  @keyframes wrongShake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+  .success-overlay {
+    position: absolute; inset: 0; background: rgba(34,197,94,0.92);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 12px; opacity: 0; pointer-events: none;
+    transition: opacity 0.4s; z-index: 10; border-radius: 16px;
+  }
+  .success-overlay.show { opacity: 1; pointer-events: auto; }
+  .success-overlay .emoji { font-size: clamp(3rem, 10vw, 5rem); }
+  .success-overlay .text {
+    color: #fff; font-size: clamp(1.2rem, 3.5vw, 2rem);
+    font-weight: 900; text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+  }
+  @media (max-width: 640px) {
+    body { padding: 5px; }
+    .container { padding: 8px; gap: 6px; border-radius: 16px; }
+    .bottom-bar { padding: 5px 8px; gap: 6px; }
+    .btn { height: 42px; padding: 0 12px; font-size: 0.8rem; }
+    .result-indicator { width: 42px; height: 42px; font-size: 1.3rem; }
+  }
+  @media (max-height: 500px) and (orientation: landscape) {
+    .header h1 { font-size: 0.85rem; }
+    .header p { font-size: 0.6rem; }
+    .btn { height: 36px; }
+    .result-indicator { width: 36px; height: 36px; font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>✏️ از نقطه تا خط</h1>
+    <p>از نقطه شروع کن، کامل روی مسیر بکش و به نقطه پایان برس</p>
+    <a href="dashboard.html" 
+style="position: fixed;
+       top: 12px;
+       right: 12px;
+       z-index: 9999;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       gap: 6px;
+       padding: 10px 18px;
+       background: rgba(255, 255, 255, 0.95);
+       color: #374151;
+       font-family: 'Vazirmatn', sans-serif;
+       font-size: 0.9rem;
+       font-weight: 900;
+       text-decoration: none;
+       border-radius: 30px;
+       border: 2px solid rgba(255, 255, 255, 0.8);
+       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+       transition: all 0.3s ease;
+       -webkit-tap-highlight-color: transparent;"
+onmouseover="this.style.transform='scale(1.08)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.3)';"
+onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.2)';">
+<span style="font-size: 1.1rem;">🏠</span>
+<span>خانه</span>
+</a>
+  </div>
+
+  <div class="game-area">
+    <svg id="gameSvg" viewBox="0 0 500 500" preserveAspectRatio="xMidYMid meet">
+      <path id="targetPath" class="target-path"></path>
+      <path id="drawnPath" class="drawn-path"></path>
+      <circle id="startDot" class="start-dot" r="16"></circle>
+      <text id="startLabel" class="dot-label">۱</text>
+      <circle id="endDot" class="end-dot" r="16"></circle>
+      <text id="endLabel" class="dot-label">پ</text>
+    </svg>
+    <div class="hint-text" id="hintText">👆 از دایره نارنجی شروع کن و تا انتها بکش</div>
+    <div class="success-overlay" id="successOverlay">
+      <div class="emoji">🎉</div>
+      <div class="text">آفرین! مسیر کامل شد</div>
+    </div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-text">پیشرفت:</div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-count" id="progressCount">۰٪</div>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="result-indicator" id="resultIndicator"></div>
+    <button class="btn reset-btn" onclick="resetGame()">🔄 شروع مجدد</button>
+    <button class="btn next-btn" id="nextBtn" onclick="nextPath()">➡️ مسیر بعدی</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   ✏️ از نقطه تا خط — کشیدن آزاد + تشخیص خودکار
+   ══════════════════════════════════════════════════════════════ */
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const svg = document.getElementById('gameSvg');
+const targetPath = document.getElementById('targetPath');
+const drawnPath = document.getElementById('drawnPath');
+const startDot = document.getElementById('startDot');
+const endDot = document.getElementById('endDot');
+const startLabel = document.getElementById('startLabel');
+const endLabel = document.getElementById('endLabel');
+const hintText = document.getElementById('hintText');
+
+const paths = [
+  { name: 'مثلث', points: [
+    { x: 250, y: 80 }, { x: 420, y: 400 }, { x: 80, y: 400 }
+  ], close: true },
+  { name: 'مربع', points: [
+    { x: 100, y: 100 }, { x: 400, y: 100 },
+    { x: 400, y: 400 }, { x: 100, y: 400 }
+  ], close: true },
+  { name: 'ستاره', points: [
+    { x: 250, y: 50 }, { x: 320, y: 210 }, { x: 480, y: 210 },
+    { x: 350, y: 320 }, { x: 410, y: 470 }, { x: 250, y: 380 },
+    { x: 90, y: 470 }, { x: 150, y: 320 }, { x: 20, y: 210 },
+    { x: 180, y: 210 }
+  ], close: true },
+  { name: 'خانه', points: [
+    { x: 250, y: 60 }, { x: 420, y: 220 }, { x: 380, y: 220 },
+    { x: 380, y: 420 }, { x: 120, y: 420 }, { x: 120, y: 220 },
+    { x: 80, y: 220 }
+  ], close: true },
+  { name: 'لوزی', points: [
+    { x: 250, y: 60 }, { x: 430, y: 250 },
+    { x: 250, y: 440 }, { x: 70, y: 250 }
+  ], close: true },
+  { name: 'مارپیچ', points: [
+    { x: 250, y: 100 }, { x: 350, y: 100 }, { x: 350, y: 200 },
+    { x: 250, y: 200 }, { x: 250, y: 150 }, { x: 300, y: 150 },
+    { x: 300, y: 250 }, { x: 200, y: 250 }, { x: 200, y: 80 },
+    { x: 400, y: 80 }, { x: 400, y: 350 }, { x: 100, y: 350 },
+    { x: 100, y: 150 }, { x: 150, y: 150 }
+  ], close: false }
+];
+
+let currentIndex = 0;
+let currentPath = null;
+let fullPoints = [];
+let targetSamples = [];
+let isDrawing = false;
+let drawnSegments = [];
+let coveredFlags = [];
+let completed = false;
+
+/* ⚙️ پارامترهای تشخیص */
+const COVER_TOLERANCE = 28;      // فاصله تحمل پوشش هر نمونه
+const START_TOLERANCE = 45;      // فاصله تحمل شروع
+const END_TOLERANCE = 40;        // فاصله تحمل رسیدن به نقطه پایان
+const COMPLETE_THRESHOLD = 0.98; // ۹۸٪ پوشش لازم (تقریباً کامل)
+const SAMPLE_STEP = 3;           // نمونه‌برداری متراکم‌تر (هر ۳ پیکسل)
+
+/* ═══ شروع مسیر ═══ */
+function initPath() {
+  currentPath = paths[currentIndex];
+  completed = false;
+  isDrawing = false;
+  drawnSegments = [];
+
+  fullPoints = [...currentPath.points];
+  if (currentPath.close) fullPoints.push({ ...currentPath.points[0] });
+
+  // نمونه‌برداری متراکم از مسیر هدف
+  targetSamples = [];
+  for (let i = 1; i < fullPoints.length; i++) {
+    const a = fullPoints[i-1], b = fullPoints[i];
+    const segLen = Math.hypot(b.x - a.x, b.y - a.y);
+    const steps = Math.max(1, Math.floor(segLen / SAMPLE_STEP));
+    for (let s = 0; s < steps; s++) {
+      const t = s / steps;
+      targetSamples.push({
+        x: a.x + (b.x - a.x) * t,
+        y: a.y + (b.y - a.y) * t
+      });
+    }
+  }
+  targetSamples.push({ ...fullPoints[fullPoints.length - 1] });
+  coveredFlags = new Array(targetSamples.length).fill(false);
+
+  targetPath.setAttribute('d', buildPathD(fullPoints));
+  targetPath.classList.remove('covered');
+
+  const start = fullPoints[0];
+  const end = fullPoints[fullPoints.length - 1];
+  startDot.setAttribute('cx', start.x);
+  startDot.setAttribute('cy', start.y);
+  startLabel.setAttribute('x', start.x);
+  startLabel.setAttribute('y', start.y);
+  endDot.setAttribute('cx', end.x);
+  endDot.setAttribute('cy', end.y);
+  endDot.setAttribute('r', 16);
+  endDot.classList.remove('reached');
+  endLabel.setAttribute('x', end.x);
+  endLabel.setAttribute('y', end.y);
+
+  drawnPath.setAttribute('d', '');
+  drawnPath.style.opacity = 0;
+
+  document.getElementById('successOverlay').classList.remove('show');
+  document.getElementById('nextBtn').classList.remove('active');
+  resetIndicator();
+  updateProgress();
+  hintText.classList.remove('hidden');
+  hintText.textContent = '👆 از دایره نارنجی شروع کن و تا انتها بکش';
+}
+
+function buildPathD(points) {
+  if (points.length < 2) return '';
+  let d = `M ${points[0].x} ${points[0].y}`;
+  for (let i = 1; i < points.length; i++) d += ` L ${points[i].x} ${points[i].y}`;
+  return d;
+}
+function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+
+function screenToSVG(clientX, clientY) {
+  const pt = svg.createSVGPoint();
+  pt.x = clientX; pt.y = clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+
+/* ═══ شروع کشیدن ═══ */
+function handleStart(e) {
+  if (completed) return;
+  e.preventDefault();
+  const point = getEventPoint(e);
+  if (dist(point, fullPoints[0]) > START_TOLERANCE) {
+    hintText.textContent = '👆 از دایره نارنجی شروع کن';
+    return;
+  }
+  isDrawing = true;
+  drawnSegments = [{ x: point.x, y: point.y }];
+  drawnPath.setAttribute('d', buildPathD(drawnSegments));
+  drawnPath.style.opacity = 1;
+  hintText.classList.add('hidden');
+  markCovered(point);
+}
+
+/* ═══ حرکت ═══ */
+function handleMove(e) {
+  if (!isDrawing || completed) return;
+  e.preventDefault();
+  const point = getEventPoint(e);
+  const last = drawnSegments[drawnSegments.length - 1];
+  if (dist(point, last) < 2) return;
+  drawnSegments.push({ x: point.x, y: point.y });
+  drawnPath.setAttribute('d', buildPathD(drawnSegments));
+  markCovered(point);
+  updateProgress();
+  checkCompletion(point);
+}
+
+/* ═══ پایان کشیدن ═══ */
+function handleEnd(e) {
+  if (!isDrawing) return;
+  isDrawing = false;
+  if (!completed) {
+    const coverage = coverageRatio();
+    if (coverage < COMPLETE_THRESHOLD) {
+      hintText.classList.remove('hidden');
+      hintText.textContent = `ادامه بده... ${toPersianNum(Math.round(coverage*100))}٪ کامل شده`;
+    } else {
+      hintText.classList.remove('hidden');
+      hintText.textContent = 'عالی! حالا به دایره قرمز (پایان) برس';
+    }
+  }
+}
+
+function getEventPoint(e) {
+  let clientX, clientY;
+  if (e.touches && e.touches.length > 0) {
+    clientX = e.touches[0].clientX; clientY = e.touches[0].clientY;
+  } else {
+    clientX = e.clientX; clientY = e.clientY;
+  }
+  return screenToSVG(clientX, clientY);
+}
+
+/* ═══ پوشش نمونه‌ها ═══ */
+function markCovered(point) {
+  for (let i = 0; i < targetSamples.length; i++) {
+    if (coveredFlags[i]) continue;
+    if (dist(point, targetSamples[i]) <= COVER_TOLERANCE) {
+      coveredFlags[i] = true;
+    }
+  }
+}
+
+function coverageRatio() {
+  let covered = 0;
+  for (const f of coveredFlags) if (f) covered++;
+  return covered / targetSamples.length;
+}
+
+/* ═══ بررسی پایان: هم پوشش کامل، هم رسیدن به نقطه پایان ═══ */
+function checkCompletion(point) {
+  const coverage = coverageRatio();
+  const endPoint = fullPoints[fullPoints.length - 1];
+  const distanceToEnd = dist(point, endPoint);
+
+  // نقطه پایان را هایلایت کن اگر نزدیک شدیم
+  if (distanceToEnd <= END_TOLERANCE) {
+    endDot.classList.add('reached');
+  } else {
+    endDot.classList.remove('reached');
+  }
+
+  // هر دو شرط لازم است
+  if (coverage >= COMPLETE_THRESHOLD && distanceToEnd <= END_TOLERANCE) {
+    finishPath();
+  } else if (coverage >= COMPLETE_THRESHOLD && distanceToEnd > END_TOLERANCE) {
+    // پوشش کامل ولی هنوز به پایان نرسیده
+    hintText.classList.remove('hidden');
+    hintText.textContent = '👆 حالا به دایره پایان (قرمز) برس';
+  }
+}
+
+/* ═══ پایان موفق ═══ */
+function finishPath() {
+  completed = true;
+  isDrawing = false;
+  targetPath.classList.add('covered');
+  endDot.setAttribute('r', 20);
+  endDot.classList.add('reached');
+  playSuccessSound();
+  document.getElementById('successOverlay').classList.add('show');
+  document.getElementById('nextBtn').classList.add('active');
+  showCorrect();
+  hintText.classList.add('hidden');
+  updateProgress();
+}
+
+function nextPath() {
+  currentIndex = (currentIndex + 1) % paths.length;
+  initPath();
+}
+
+function resetGame() {
+  currentIndex = 0;
+  initPath();
+}
+
+function updateProgress() {
+  const pct = Math.min(100, Math.round(coverageRatio() * 100));
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressCount').textContent = toPersianNum(pct) + '٪';
+}
+
+function showCorrect() {
+  const ind = document.getElementById('resultIndicator');
+  ind.textContent = '✓';
+  ind.className = 'result-indicator show correct';
+}
+function showWrong() {
+  const ind = document.getElementById('resultIndicator');
+  ind.textContent = '✗';
+  ind.className = 'result-indicator show wrong';
+  setTimeout(resetIndicator, 1500);
+}
+function resetIndicator() {
+  const ind = document.getElementById('resultIndicator');
+  ind.className = 'result-indicator';
+  ind.textContent = '';
+}
+
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+  return audioCtx;
+}
+function playSuccessSound() {
+  const ctx = getAudioCtx(); if (!ctx) return;
+  [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+    setTimeout(() => {
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq; gain.gain.value = 0.1;
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.25);
+    }, i * 90);
+  });
+}
+function toPersianNum(num) {
+  const digits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  return String(num).replace(/\d/g, d => digits[d]);
+}
+
+svg.addEventListener('mousedown', handleStart);
+svg.addEventListener('mousemove', handleMove);
+svg.addEventListener('mouseup', handleEnd);
+svg.addEventListener('mouseleave', handleEnd);
+svg.addEventListener('touchstart', handleStart, { passive: false });
+svg.addEventListener('touchmove', handleMove, { passive: false });
+svg.addEventListener('touchend', handleEnd, { passive: false });
+svg.addEventListener('touchcancel', handleEnd, { passive: false });
+
+window.addEventListener('load', () => { initPath(); });
+</script>
+
+</body>
+</html>

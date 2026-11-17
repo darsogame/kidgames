@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>⚽ توپ من کجاست؟</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; width: 100%; overflow: hidden; position: fixed; }
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: linear-gradient(135deg, #34d399 0%, #60a5fa 50%, #a78bfa 100%);
+    display: flex; align-items: stretch; justify-content: center;
+    padding: 8px; -webkit-tap-highlight-color: transparent;
+  }
+  .container {
+    width: 100%; max-width: 1000px; height: 100%;
+    display: grid; grid-template-rows: auto 1fr auto auto;
+    gap: 8px; background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(15px); border-radius: 20px; padding: 10px;
+    border: 2px solid rgba(255,255,255,0.3);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3); overflow: hidden;
+  }
+  .header { text-align: center; padding: 2px 0; }
+  .header h1 {
+    font-size: clamp(1rem, 2.6vw, 1.6rem); color: #fff;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.3); line-height: 1.2;
+  }
+  .header p {
+    color: #fef3c7; font-size: clamp(0.65rem, 1.5vw, 0.9rem);
+    font-weight: 700; line-height: 1.3;
+  }
+  .scene-area {
+    background: rgba(255,255,255,0.97); border-radius: 16px;
+    position: relative; overflow: hidden; min-height: 0;
+    box-shadow: inset 0 0 30px rgba(52,211,153,0.15);
+    display: flex; align-items: center; justify-content: center;
+  }
+  svg#sceneSvg {
+    width: 100%; height: 100%; display: block;
+  }
+  .question-badge {
+    position: absolute; top: 10px; left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff; padding: 8px 24px; border-radius: 30px;
+    font-size: clamp(0.85rem, 2vw, 1.15rem);
+    font-weight: 900; white-space: nowrap;
+    box-shadow: 0 6px 20px rgba(217,119,6,0.5);
+    z-index: 10;
+  }
+  .options-area {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px; flex-shrink: 0;
+  }
+  .option-btn {
+    background: rgba(255,255,255,0.97);
+    border: 3px solid #e5e7eb;
+    border-radius: 14px;
+    padding: clamp(8px, 1.5vh, 14px) 10px;
+    font-family: inherit;
+    font-size: clamp(0.75rem, 1.7vw, 1rem);
+    font-weight: 900; color: #374151;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    -webkit-tap-highlight-color: transparent;
+    min-height: 52px;
+  }
+  .option-btn:hover:not(:disabled) {
+    transform: translateY(-3px) scale(1.02);
+    border-color: #60a5fa;
+    box-shadow: 0 8px 20px rgba(96,165,250,0.3);
+  }
+  .option-btn:active:not(:disabled) { transform: scale(0.97); }
+  .option-btn:disabled { cursor: not-allowed; }
+  .option-btn.correct {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-color: #fff; color: #fff;
+    box-shadow: 0 8px 25px rgba(34,197,94,0.5);
+  }
+  .option-btn.wrong {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border-color: #fff; color: #fff;
+    box-shadow: 0 8px 25px rgba(239,68,68,0.5);
+    animation: wrongShake 0.5s ease;
+  }
+  @keyframes wrongShake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+  .option-emoji { font-size: clamp(1.1rem, 2.5vw, 1.5rem); }
+  .bottom-bar {
+    display: flex; justify-content: center; align-items: center;
+    gap: clamp(8px, 1.5vw, 15px);
+    background: rgba(255,255,255,0.95); border-radius: 14px;
+    padding: 6px 12px; flex-shrink: 0;
+  }
+  .btn {
+    height: clamp(42px, 6.5vh, 55px);
+    padding: 0 clamp(15px, 3vw, 30px);
+    border-radius: 30px; border: 2px solid #fff;
+    color: #fff; font-size: clamp(0.8rem, 1.8vw, 1.05rem);
+    font-weight: 900; font-family: inherit; cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    display: flex; align-items: center; justify-content: center;
+    gap: 5px; white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:hover { transform: scale(1.05); }
+  .btn:active { transform: scale(0.97); }
+  .reset-btn {
+    background: linear-gradient(135deg, #94a3b8, #64748b);
+    box-shadow: 0 6px 15px rgba(100,116,139,0.5);
+  }
+  .next-btn {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 6px 15px rgba(34,197,94,0.5);
+    opacity: 0.45; pointer-events: none;
+  }
+  .next-btn.active { opacity: 1; pointer-events: auto; }
+  .score-box {
+    background: rgba(255,255,255,0.95);
+    border-radius: 14px; padding: 6px 16px;
+    font-size: clamp(0.8rem, 1.8vw, 1.05rem);
+    font-weight: 900; color: #16a34a; white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  @media (max-width: 640px) {
+    body { padding: 5px; }
+    .container { padding: 8px; gap: 6px; border-radius: 16px; }
+    .bottom-bar { padding: 5px 8px; gap: 6px; }
+    .btn { height: 42px; padding: 0 12px; font-size: 0.8rem; }
+    .option-btn { min-height: 46px; font-size: 0.75rem; padding: 6px 8px; }
+  }
+  @media (max-height: 500px) and (orientation: landscape) {
+    .header h1 { font-size: 0.85rem; }
+    .header p { font-size: 0.6rem; }
+    .btn { height: 36px; }
+    .option-btn { min-height: 40px; padding: 4px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>⚽ توپ من کجاست؟</h1>
+    <p>با دقت نگاه کن و جای توپ را پیدا کن</p>
+    <a href="dashboard.html" 
+style="position: fixed;
+       top: 12px;
+       right: 12px;
+       z-index: 9999;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       gap: 6px;
+       padding: 10px 18px;
+       background: rgba(255, 255, 255, 0.95);
+       color: #374151;
+       font-family: 'Vazirmatn', sans-serif;
+       font-size: 0.9rem;
+       font-weight: 900;
+       text-decoration: none;
+       border-radius: 30px;
+       border: 2px solid rgba(255, 255, 255, 0.8);
+       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+       transition: all 0.3s ease;
+       -webkit-tap-highlight-color: transparent;"
+onmouseover="this.style.transform='scale(1.08)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.3)';"
+onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.2)';">
+<span style="font-size: 1.1rem;">🏠</span>
+<span>خانه</span>
+</a>
+  </div>
+
+  <div class="scene-area">
+    <div class="question-badge" id="questionBadge">توپ کجاست؟</div>
+    <svg id="sceneSvg" viewBox="0 0 500 500" preserveAspectRatio="xMidYMid meet">
+      <!-- پس‌زمینه و کف -->
+      <rect x="0" y="0" width="500" height="500" fill="#f0fdf4"/>
+      <rect x="0" y="400" width="500" height="100" fill="#fde68a"/>
+      <rect x="0" y="400" width="500" height="4" fill="#d97706"/>
+      <!-- خطوط کف -->
+      <g stroke="#d97706" stroke-width="1.5" opacity="0.3">
+        <line x1="20" y1="430" x2="40" y2="430"/>
+        <line x1="70" y1="430" x2="90" y2="430"/>
+        <line x1="120" y1="430" x2="140" y2="430"/>
+        <line x1="170" y1="430" x2="190" y2="430"/>
+        <line x1="220" y1="430" x2="240" y2="430"/>
+        <line x1="270" y1="430" x2="290" y2="430"/>
+        <line x1="320" y1="430" x2="340" y2="430"/>
+        <line x1="370" y1="430" x2="390" y2="430"/>
+        <line x1="420" y1="430" x2="440" y2="430"/>
+        <line x1="470" y1="430" x2="490" y2="430"/>
+      </g>
+
+      <!-- ═══ میز (وسط) ═══ -->
+      <g id="tableGroup">
+        <!-- سایه -->
+        <ellipse cx="250" cy="400" rx="110" ry="12" fill="#000" opacity="0.12"/>
+        <!-- پایه چپ -->
+        <rect x="160" y="300" width="16" height="100" rx="3" fill="#78350f" stroke="#451a03" stroke-width="2"/>
+        <!-- پایه راست -->
+        <rect x="324" y="300" width="16" height="100" rx="3" fill="#78350f" stroke="#451a03" stroke-width="2"/>
+        <!-- پایه میانی -->
+        <rect x="242" y="300" width="16" height="100" rx="3" fill="#78350f" stroke="#451a03" stroke-width="2" opacity="0.85"/>
+        <!-- رومیزی -->
+        <rect x="140" y="280" width="220" height="24" rx="6" fill="#d97706" stroke="#92400e" stroke-width="3"/>
+        <rect x="140" y="280" width="220" height="10" rx="4" fill="#fbbf24"/>
+        <!-- خط چوب -->
+        <line x1="160" y1="292" x2="340" y2="292" stroke="#b45309" stroke-width="1.5" opacity="0.5"/>
+      </g>
+
+      <!-- ═══ جعبه (راست) ═══ -->
+      <g id="boxGroup">
+        <ellipse cx="400" cy="400" rx="70" ry="10" fill="#000" opacity="0.12"/>
+        <!-- بدنه -->
+        <rect x="340" y="310" width="120" height="90" rx="4" fill="#2563eb" stroke="#1e40af" stroke-width="3"/>
+        <!-- داخل (بالای بدنه) -->
+        <rect x="340" y="295" width="120" height="20" rx="2" fill="#1e3a8a"/>
+        <!-- لبه بالایی -->
+        <rect x="336" y="295" width="128" height="12" rx="3" fill="#93c5fd" stroke="#1e40af" stroke-width="2.5"/>
+        <!-- نوار تزئینی -->
+        <rect x="340" y="355" width="120" height="8" fill="#1d4ed8" opacity="0.5"/>
+        <!-- ستاره -->
+        <text x="400" y="378" text-anchor="middle" font-size="22" fill="#fde047" font-weight="bold">★</text>
+        <!-- درپوش باز -->
+        <g transform="translate(460, 295) rotate(-25)">
+          <rect x="0" y="0" width="16" height="105" rx="3" fill="#3b82f6" stroke="#1e40af" stroke-width="2.5"/>
+        </g>
+      </g>
+
+      <!-- ═══ صندلی (چپ) ═══ -->
+      <g id="chairGroup">
+        <ellipse cx="90" cy="400" rx="60" ry="10" fill="#000" opacity="0.12"/>
+        <!-- پشتی -->
+        <rect x="45" y="220" width="90" height="90" rx="8" fill="#8b5cf6" stroke="#4c1d95" stroke-width="3"/>
+        <line x1="60" y1="240" x2="120" y2="240" stroke="#ddd6fe" stroke-width="2" opacity="0.6"/>
+        <line x1="60" y1="258" x2="120" y2="258" stroke="#ddd6fe" stroke-width="2" opacity="0.6"/>
+        <!-- نشیمن -->
+        <rect x="35" y="308" width="110" height="20" rx="5" fill="#7c3aed" stroke="#4c1d95" stroke-width="3"/>
+        <!-- پایه‌ها -->
+        <rect x="45" y="328" width="10" height="72" rx="2" fill="#6d28d9" stroke="#2e1065" stroke-width="2"/>
+        <rect x="125" y="328" width="10" height="72" rx="2" fill="#6d28d9" stroke="#2e1065" stroke-width="2"/>
+        <rect x="55" y="328" width="8" height="72" rx="2" fill="#6d28d9" stroke="#2e1065" stroke-width="2" opacity="0.6"/>
+        <rect x="117" y="328" width="8" height="72" rx="2" fill="#6d28d9" stroke="#2e1065" stroke-width="2" opacity="0.6"/>
+      </g>
+
+      <!-- ═══ توپ — توسط JS جابه‌جا می‌شود ═══ -->
+      <g id="ballGroup">
+        <circle cx="0" cy="0" r="28" fill="#f8fafc" stroke="#334155" stroke-width="2.5"/>
+        <polygon points="0,-18 14,-9 14,9 0,18 -14,9 -14,-9" fill="#1e293b"/>
+        <polygon points="-24,-4 -18,-11 -10,-6 -12,4 -22,4" fill="#1e293b"/>
+        <polygon points="24,-4 18,-11 10,-6 12,4 22,4" fill="#1e293b"/>
+        <polygon points="-8,24 -2,18 8,20 8,28 -4,28" fill="#1e293b"/>
+        <polygon points="8,24 2,18 -8,20 -8,28 4,28" fill="#1e293b"/>
+        <ellipse cx="-10" cy="-10" rx="6" ry="4" fill="#fff" opacity="0.6"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="options-area" id="optionsArea"></div>
+
+  <div class="bottom-bar">
+    <div class="score-box" id="scoreBox">امتیاز: ۰</div>
+    <button class="btn reset-btn" onclick="resetGame()">🔄 شروع مجدد</button>
+    <button class="btn next-btn" id="nextBtn" onclick="nextQuestion()">➡️ سؤال بعدی</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   ⚽ توپ من کجاست؟ — همه‌چیز در یک SVG با viewBox 500x500
+   ══════════════════════════════════════════════════════════════ */
+
+const ballGroup = document.getElementById('ballGroup');
+const optionsArea = document.getElementById('optionsArea');
+const questionBadge = document.getElementById('questionBadge');
+
+/* ═══ موقعیت‌های توپ در مختصات SVG (500x500) ═══
+   این مختصات دقیقاً نسبت به اشیاء تعریف شده‌اند:
+   - میز: رومیزی از y=280 تا y=304، مرکز x=250
+   - جعبه: بدنه از x=340 تا x=460، y=295 تا y=400
+   - صندلی: نشیمن از x=35 تا x=145، y=308 تا y=328
+*/
+const ballPositions = {
+  'بالای میز':    { x: 250, y: 250, scale: 1 },
+  'زیر میز':      { x: 250, y: 365, scale: 1 },
+  'داخل جعبه':    { x: 400, y: 340, scale: 0.85 },
+  'بیرون جعبه':   { x: 480, y: 380, scale: 1 },   // ← سمت راست جعبه
+  'روی صندلی':    { x: 90,  y: 290, scale: 1 },
+  'کنار صندلی':   { x: 15,  y: 380, scale: 1 }
+};
+
+const positions = {
+  'بالای میز':    { emoji: '⬆️' },
+  'زیر میز':      { emoji: '⬇️' },
+  'داخل جعبه':    { emoji: '📦' },
+  'بیرون جعبه':   { emoji: '🚪' },
+  'روی صندلی':    { emoji: '🪑' },
+  'کنار صندلی':   { emoji: '↔️' }
+};
+
+const questions = [
+  { correct: 'بالای میز',  options: ['بالای میز', 'زیر میز', 'داخل جعبه', 'کنار صندلی'] },
+  { correct: 'زیر میز',    options: ['بالای میز', 'زیر میز', 'روی صندلی', 'بیرون جعبه'] },
+  { correct: 'داخل جعبه',  options: ['داخل جعبه', 'بیرون جعبه', 'بالای میز', 'کنار صندلی'] },
+  { correct: 'بیرون جعبه', options: ['داخل جعبه', 'بیرون جعبه', 'زیر میز', 'روی صندلی'] },
+  { correct: 'روی صندلی',  options: ['روی صندلی', 'کنار صندلی', 'بالای میز', 'داخل جعبه'] },
+  { correct: 'کنار صندلی', options: ['روی صندلی', 'کنار صندلی', 'زیر میز', 'بیرون جعبه'] }
+];
+
+let currentQuestionIndex = 0;
+let score = 0;
+let locked = false;
+
+/* ═══ جابه‌جایی توپ ═══ */
+function placeBall(positionName) {
+  const pos = ballPositions[positionName];
+  const scale = pos.scale || 1;
+  ballGroup.setAttribute('transform', `translate(${pos.x}, ${pos.y}) scale(${scale})`);
+  // اگر داخل جعبه است، پشت بدنه جعبه برود
+  if (positionName === 'داخل جعبه') {
+    ballGroup.style.display = 'none';
+    // نمایش توپ داخل جعبه با یک المان جداگانه؟ نه — توپ را قبل از boxGroup بگذاریم
+    // راه‌حل: توپ را در DOM به قبل از boxGroup منتقل کنیم
+    const parent = ballGroup.parentNode;
+    const boxGroup = document.getElementById('boxGroup');
+    if (boxGroup.nextSibling !== ballGroup) {
+      parent.insertBefore(ballGroup, boxGroup.nextSibling);
+    }
+    ballGroup.style.display = '';
+  } else {
+    // توپ را به آخر SVG برگردان (روی همه)
+    const parent = ballGroup.parentNode;
+    if (parent.lastChild !== ballGroup) {
+      parent.appendChild(ballGroup);
+    }
+    ballGroup.style.display = '';
+  }
+}
+
+/* ═══ نمایش سؤال ═══ */
+function showQuestion() {
+  const q = questions[currentQuestionIndex];
+  locked = false;
+
+  questionBadge.textContent = 'توپ کجاست؟';
+  placeBall(q.correct);
+
+  const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+
+  optionsArea.innerHTML = '';
+  shuffled.forEach(optName => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-emoji">${positions[optName].emoji}</span> <span>${optName}</span>`;
+    btn.addEventListener('click', () => handleAnswer(optName, q.correct, btn));
+    optionsArea.appendChild(btn);
+  });
+
+  document.getElementById('nextBtn').classList.remove('active');
+}
+
+/* ═══ پاسخ ═══ */
+function handleAnswer(selected, correct, btn) {
+  if (locked) return;
+
+  if (selected === correct) {
+    locked = true;
+    btn.classList.add('correct');
+    score++;
+    updateScore();
+    playSuccessSound();
+    document.getElementById('nextBtn').classList.add('active');
+    optionsArea.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+  } else {
+    btn.classList.add('wrong');
+    btn.disabled = true;
+    playErrorSound();
+    setTimeout(() => {
+      btn.classList.remove('wrong');
+      btn.disabled = false;
+    }, 1200);
+  }
+}
+
+function nextQuestion() {
+  currentQuestionIndex = (currentQuestionIndex + 1) % questions.length;
+  showQuestion();
+}
+
+function resetGame() {
+  currentQuestionIndex = 0;
+  score = 0;
+  updateScore();
+  showQuestion();
+}
+
+function updateScore() {
+  document.getElementById('scoreBox').textContent = `امتیاز: ${toPersianNum(score)}`;
+}
+
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+  return audioCtx;
+}
+function playSuccessSound() {
+  const ctx = getAudioCtx(); if (!ctx) return;
+  [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+    setTimeout(() => {
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq; gain.gain.value = 0.1;
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.25);
+    }, i * 90);
+  });
+}
+function playErrorSound() {
+  const ctx = getAudioCtx(); if (!ctx) return;
+  const osc = ctx.createOscillator(); const gain = ctx.createGain();
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.frequency.setValueAtTime(300, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.3);
+  gain.gain.value = 0.06;
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+  osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.3);
+}
+function toPersianNum(num) {
+  const digits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  return String(num).replace(/\d/g, d => digits[d]);
+}
+
+window.addEventListener('load', () => {
+  showQuestion();
+});
+</script>
+
+</body>
+</html>
